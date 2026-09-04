@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="s-teal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#0D9488"/>
+    </linearGradient>
+    <linearGradient id="s-navy-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="s-text-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0D9488"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Monogram Emblem Centered -->
+  <g transform="translate(100, 16)">
+    <rect x="0" y="0" width="200" height="100" rx="24" fill="url(#s-navy-grad)" stroke="#334155" stroke-width="2"/>
+    
+    <g transform="translate(20, 22)">
+      <!-- Letter R -->
+      <path d="M 12 0 V 56 M 12 0 H 36 C 52 0, 56 16, 56 28 C 56 40, 48 48, 36 48 H 12 M 36 48 L 56 90" 
+            fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Letter E with Eye Motif -->
+      <g transform="translate(60, 0)">
+        <path d="M 10 0 V 56 M 10 0 H 48 M 10 56 H 48" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round"/>
+        <circle cx="28" cy="28" r="18" fill="#0F172A" stroke="url(#s-teal-grad)" stroke-width="6"/>
+        <circle cx="28" cy="28" r="8" fill="url(#s-teal-grad)"/>
+        <circle cx="31" cy="25" r="2" fill="#FFFFFF"/>
+      </g>
+
+      <!-- Letter H -->
+      <g transform="translate(116, 0)">
+        <path d="M 10 0 V 56 M 48 0 V 56 M 10 28 H 48" 
+              fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Typography Centered -->
+  <g transform="translate(200, 142)">
+    <text x="0" y="40" font-family="Outfit, Inter, system-ui, sans-serif" font-weight="900" font-size="26" fill="#0F172A" text-anchor="middle" letter-spacing="-0.5">
+      REKHA <tspan fill="url(#s-text-teal)">EYE HOSPITAL</tspan>
+    </text>
+
+    <text x="0" y="64" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="11" fill="#64748B" text-anchor="middle" letter-spacing="2">
+      SUPER SPECIALTY &amp; LASIK CENTER
+    </text>
+
+    <rect x="-60" y="74" width="120" height="18" rx="4" fill="#0D9488" opacity="0.15"/>
+    <text x="0" y="87" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="9" fill="#0D9488" text-anchor="middle" letter-spacing="1">NABH ACCREDITED</text>
+  </g>
+</svg>
