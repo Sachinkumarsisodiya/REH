@@ -6,6 +6,7 @@ import {
   ChevronRight, Sun, Sunset, Moon, HeartPulse, Award, MapPin
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
 
 const DEFAULT_DOCTORS = [
   {
@@ -116,7 +117,7 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
   // Fetch doctors list from backend
   const fetchDoctors = () => {
     setLoadingDoctors(true);
-    fetch('/api/doctors')
+    fetch(`${API_BASE_URL}/api/doctors`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.doctors && data.doctors.length > 0) {
@@ -146,7 +147,7 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
   useEffect(() => {
     if (formData.doctor_id && formData.appointment_date) {
       setLoadingSlots(true);
-      fetch(`/api/appointments/available-slots?doctor_id=${formData.doctor_id}&date=${formData.appointment_date}`)
+      fetch(`${API_BASE_URL}/api/appointments/available-slots?doctor_id=${formData.doctor_id}&date=${formData.appointment_date}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -208,7 +209,7 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
 
     setSubmitting(true);
     try {
-      const res = await fetch('/api/appointments', {
+      const res = await fetch(`${API_BASE_URL}/api/appointments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
