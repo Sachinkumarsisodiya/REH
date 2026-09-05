@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Lock, User, KeyRound, Loader2, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
 
 export default function AdminLogin({ onLoginSuccess }) {
   const [username, setUsername] = useState('admin');
@@ -16,7 +17,7 @@ export default function AdminLogin({ onLoginSuccess }) {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/login', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, Loader2, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
 
 export default function RescheduleModal({ appointment, token, onClose, onSuccess }) {
   const [newDate, setNewDate] = useState(appointment.appointment_date);
@@ -15,7 +16,7 @@ export default function RescheduleModal({ appointment, token, onClose, onSuccess
   useEffect(() => {
     if (appointment.doctor_id && newDate) {
       setLoadingSlots(true);
-      fetch(`/api/appointments/available-slots?doctor_id=${appointment.doctor_id}&date=${newDate}`)
+      fetch(`${API_BASE_URL}/api/appointments/available-slots?doctor_id=${appointment.doctor_id}&date=${newDate}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -37,7 +38,7 @@ export default function RescheduleModal({ appointment, token, onClose, onSuccess
 
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/appointments/${appointment.id}/reschedule`, {
+      const res = await fetch(`${API_BASE_URL}/api/appointments/${appointment.id}/reschedule`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

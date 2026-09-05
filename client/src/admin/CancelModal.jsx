@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, AlertTriangle, Send, Check, MessageSquare, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
 
 const PRESET_REASONS = [
   "Doctor is on urgent emergency surgery duty during this time slot.",
@@ -43,7 +44,7 @@ Rekha Eye Hospital & Lasik Center`;
 
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/appointments/${appointment.id}/reject`, {
+      const res = await fetch(`${API_BASE_URL}/api/appointments/${appointment.id}/reject`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

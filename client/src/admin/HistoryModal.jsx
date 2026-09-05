@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { X, History, Clock, FileText, Loader2 } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export default function HistoryModal({ appointment, token, onClose }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/appointments/${appointment.id}/history`, {
+    fetch(`${API_BASE_URL}/api/appointments/${appointment.id}/history`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())

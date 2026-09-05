@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { User, Award, Calendar, Clock, Star, CheckCircle, ChevronRight, Stethoscope, Sparkles, Search, Check, ShieldCheck, ArrowRight } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export default function DoctorsPage() {
   const [doctorsList, setDoctorsList] = useState([]);
@@ -16,7 +17,7 @@ export default function DoctorsPage() {
   ];
 
   useEffect(() => {
-    fetch('/api/doctors')
+    fetch(`${API_BASE_URL}/api/doctors`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.doctors) {

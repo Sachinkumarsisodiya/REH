@@ -6,6 +6,7 @@ import {
   UserCheck, AlertTriangle, Sparkles, Check, Phone, Mail, FileText, ArrowUpRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
 import RescheduleModal from './RescheduleModal';
 import HistoryModal from './HistoryModal';
 import DoctorManager from './DoctorManager';
@@ -31,7 +32,7 @@ export default function AdminDashboard({ token, user, onLogout }) {
   const [approvingId, setApprovingId] = useState(null);
 
   const fetchStats = () => {
-    fetch('/api/admin/dashboard-stats', {
+    fetch(`${API_BASE_URL}/api/admin/dashboard-stats`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
@@ -44,7 +45,7 @@ export default function AdminDashboard({ token, user, onLogout }) {
   };
 
   const fetchDoctors = () => {
-    fetch('/api/doctors')
+    fetch(`${API_BASE_URL}/api/doctors`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.doctors) {
@@ -56,7 +57,7 @@ export default function AdminDashboard({ token, user, onLogout }) {
 
   const fetchAppointments = () => {
     setLoading(true);
-    let url = `/api/appointments?status=${statusFilter}`;
+    let url = `${API_BASE_URL}/api/appointments?status=${statusFilter}`;
     if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
     if (dateFilter) url += `&date=${dateFilter}`;
     if (doctorFilter && doctorFilter !== 'all') url += `&doctor_id=${doctorFilter}`;
@@ -94,7 +95,7 @@ export default function AdminDashboard({ token, user, onLogout }) {
   const handleApprove = async (app) => {
     setApprovingId(app.id);
     try {
-      const res = await fetch(`/api/appointments/${app.id}/approve`, {
+      const res = await fetch(`${API_BASE_URL}/api/appointments/${app.id}/approve`, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` }
       });

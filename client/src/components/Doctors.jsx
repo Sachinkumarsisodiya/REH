@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, Award, Calendar, Clock, Star, CheckCircle, ChevronRight, Stethoscope, Sparkles } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export default function Doctors({ doctors: propDoctors, onSelectDoctorForBooking }) {
   const [doctorsList, setDoctorsList] = useState([]);
@@ -14,7 +15,7 @@ export default function Doctors({ doctors: propDoctors, onSelectDoctorForBooking
   ];
 
   useEffect(() => {
-    fetch('/api/doctors')
+    fetch(`${API_BASE_URL}/api/doctors`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.doctors && data.doctors.length > 0) {

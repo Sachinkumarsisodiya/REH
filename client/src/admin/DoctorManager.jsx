@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserPlus, Edit, Power, Check, X, Loader2, Stethoscope, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
 
 export default function DoctorManager({ token }) {
   const [doctors, setDoctors] = useState([]);
@@ -20,7 +21,7 @@ export default function DoctorManager({ token }) {
 
   const fetchDoctors = () => {
     setLoading(true);
-    fetch('/api/doctors')
+    fetch(`${API_BASE_URL}/api/doctors`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -39,7 +40,7 @@ export default function DoctorManager({ token }) {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch('/api/admin/doctors', {
+      const res = await fetch(`${API_BASE_URL}/api/admin/doctors`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +75,7 @@ export default function DoctorManager({ token }) {
 
   const toggleStatus = async (docId) => {
     try {
-      const res = await fetch(`/api/admin/doctors/${docId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/admin/doctors/${docId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
