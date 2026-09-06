@@ -283,6 +283,99 @@ def get_dashboard_stats():
         }
     }), 200
 
+@admin_bp.route('/admin/doctors', methods=['GET'])
+@jwt_required()
+def get_all_admin_doctors():
+    doctors = Doctor.query.order_by(Doctor.id.asc()).all()
+    return jsonify({
+        'success': True,
+        'doctors': [d.to_dict() for d in doctors]
+    }), 200
+
+@admin_bp.route('/admin/doctors/activate-all', methods=['POST'])
+@jwt_required()
+def activate_all_doctors():
+    doctors = Doctor.query.all()
+    for doc in doctors:
+        doc.is_active = True
+    db.session.commit()
+    return jsonify({
+        'success': True,
+        'message': f'All {len(doctors)} doctors have been activated.',
+        'doctors': [d.to_dict() for d in doctors]
+    }), 200
+
+@admin_bp.route('/admin/doctors/restore-defaults', methods=['POST'])
+@jwt_required()
+def restore_default_doctors():
+    default_doctors_data = [
+        {
+            "name": "Dr. Rekha Sisodiya",
+            "specialty": "Founder, Medical Director & Chief LASIK Specialist",
+            "qualification": "MBBS, MS (Ophthalmology) AIIMS, Fellowship in Refractive Surgery (London)",
+            "photo_url": "/dr-rekha-sisodiya.jpg",
+            "available_days": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+            "start_time": "09:00",
+            "end_time": "17:00",
+            "slot_duration_mins": 30,
+            "is_active": True
+        },
+        {
+            "name": "Dr. Sachin Kumar Sisodiya",
+            "specialty": "Senior Cataract, Phaco & Glaucoma Specialist",
+            "qualification": "MBBS, MS (Ophthalmology), FICO (UK), Fellowship in Micro-Incision Cataract",
+            "photo_url": "/dr-sachin-sisodiya.jpg",
+            "available_days": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+            "start_time": "09:30",
+            "end_time": "17:30",
+            "slot_duration_mins": 30,
+            "is_active": True
+        },
+        {
+            "name": "Dr. Kush",
+            "specialty": "Vitreo-Retina & Diabetic Eye Care Specialist",
+            "qualification": "MBBS, MD (Ophthalmology), DNB, Senior Vitreo-Retina Fellow",
+            "photo_url": "/dr-kush.jpg",
+            "available_days": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+            "start_time": "10:00",
+            "end_time": "18:00",
+            "slot_duration_mins": 30,
+            "is_active": True
+        },
+        {
+            "name": "Dr. Bhavana",
+            "specialty": "Pediatric Ophthalmology, Squint & Cornea Specialist",
+            "qualification": "MBBS, MS (Ophthalmology), Fellowship in Pediatric Eye Care & Strabismus",
+            "photo_url": "/dr-bhavana.jpg",
+            "available_days": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+            "start_time": "09:00",
+            "end_time": "16:30",
+            "slot_duration_mins": 30,
+            "is_active": True
+        }
+    ]
+
+    for d_data in default_doctors_data:
+        existing = Doctor.query.filter_by(name=d_data['name']).first()
+        if existing:
+            existing.is_active = True
+            existing.specialty = d_data['specialty']
+            existing.qualification = d_data['qualification']
+            existing.photo_url = d_data['photo_url']
+            existing.start_time = d_data['start_time']
+            existing.end_time = d_data['end_time']
+        else:
+            new_doc = Doctor(**d_data)
+            db.session.add(new_doc)
+
+    db.session.commit()
+    all_docs = Doctor.query.order_by(Doctor.id.asc()).all()
+    return jsonify({
+        'success': True,
+        'message': 'All default specialist profiles restored and activated.',
+        'doctors': [d.to_dict() for d in all_docs]
+    }), 200
+
 @admin_bp.route('/admin/doctors', methods=['POST'])
 @jwt_required()
 def add_doctor():
@@ -341,7 +434,7 @@ def update_doctor(doc_id):
         'doctor': doctor.to_dict()
     }), 200
 
-@admin_bp.route('/admin/doctors/<int:doc_id>', methods=['DELETE'])
+@admin_bp.route('/admin/doctors/<int:doc_id>', methods=['DELETE', 'PATCH'])
 @jwt_required()
 def toggle_doctor_status(doc_id):
     doctor = Doctor.query.get(doc_id)
@@ -354,6 +447,6 @@ def toggle_doctor_status(doc_id):
     status_str = "activated" if doctor.is_active else "deactivated"
     return jsonify({
         'success': True,
-        'message': f'Doctor {status_str} successfully.',
+        'message': f'Doctor {doctor.name} {status_str} successfully.',
         'doctor': doctor.to_dict()
     }), 200
