@@ -446,13 +446,25 @@ export default function AdminDashboard({ token, user, onLogout }) {
                   ))}
                 </select>
 
-                {/* Date Filter */}
-                <input
-                  type="date"
-                  value={dateFilter}
-                  onChange={(e) => setDateFilter(e.target.value)}
-                  className="w-full sm:w-auto px-3 py-2 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-teal-500"
-                />
+                {/* Date Filter with visible Capital DD/MM/YYYY placeholder on Mobile & Web */}
+                <div className="relative w-full sm:w-auto">
+                  <div className="flex items-center px-3.5 py-2 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 focus-within:border-teal-500 cursor-pointer min-w-[155px] justify-between shadow-inner">
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                      <span className={`font-mono text-xs font-bold ${dateFilter ? 'text-white' : 'text-slate-500'}`}>
+                        {dateFilter ? dateFilter.split('-').reverse().join('/') : 'DD/MM/YYYY'}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-bold ml-2">📅</span>
+                    <input
+                      type="date"
+                      value={dateFilter}
+                      onChange={(e) => setDateFilter(e.target.value)}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                      title="Select Date (DD/MM/YYYY)"
+                    />
+                  </div>
+                </div>
                 
                 {/* Search Bar */}
                 <div className="relative w-full sm:w-auto flex-1">
