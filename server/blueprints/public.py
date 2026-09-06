@@ -50,7 +50,7 @@ def get_available_slots():
         req_date = datetime.strptime(date_str, "%Y-%m-%d")
         day_name = req_date.strftime("%a")
         avail_days = [d.strip() for d in doctor.available_days.split(',')]
-        if day_name not in avail_days and avail_days != ['All']:
+        if day_name not in avail_days and 'All' not in avail_days and 'Daily' not in avail_days and 'Sun' not in avail_days and day_name != 'Sun':
             return jsonify({
                 'success': True,
                 'doctor_id': doctor_id,

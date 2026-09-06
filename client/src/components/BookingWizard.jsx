@@ -16,7 +16,7 @@ const DEFAULT_DOCTORS = [
     specialty: "Founder, Medical Director & Chief LASIK Specialist",
     qualification: "MBBS, MS (Ophthalmology) AIIMS, Fellowship in Refractive Surgery (London)",
     photo_url: "/dr-rekha-sisodiya.jpg",
-    available_days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    available_days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     start_time: "09:00",
     end_time: "17:00",
     slot_duration_mins: 30,
@@ -28,7 +28,7 @@ const DEFAULT_DOCTORS = [
     specialty: "Senior Cataract, Phaco & Glaucoma Specialist",
     qualification: "MBBS, MS (Ophthalmology), FICO (UK), Fellowship in Micro-Incision Cataract",
     photo_url: "/dr-sachin-sisodiya.jpg",
-    available_days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    available_days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     start_time: "09:30",
     end_time: "17:30",
     slot_duration_mins: 30,
@@ -40,7 +40,7 @@ const DEFAULT_DOCTORS = [
     specialty: "Vitreo-Retina & Diabetic Eye Care Specialist",
     qualification: "MBBS, MD (Ophthalmology), DNB, Senior Vitreo-Retina Fellow",
     photo_url: "/dr-kush.jpg",
-    available_days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    available_days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     start_time: "10:00",
     end_time: "18:00",
     slot_duration_mins: 30,
@@ -52,7 +52,7 @@ const DEFAULT_DOCTORS = [
     specialty: "Pediatric Ophthalmology, Squint & Cornea Specialist",
     qualification: "MBBS, MS (Ophthalmology), Fellowship in Pediatric Eye Care & Strabismus",
     photo_url: "/dr-bhavana.jpg",
-    available_days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    available_days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     start_time: "09:00",
     end_time: "16:30",
     slot_duration_mins: 30,
@@ -60,45 +60,88 @@ const DEFAULT_DOCTORS = [
   }
 ];
 
+// Local Date Formatter in YYYY-MM-DD (immune to UTC timezone offsets)
+const getLocalDateString = (d = new Date()) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+// Real-time client-side slot cutoff helper (Strict 15 mins advance cutoff)
+const isSlotCutoff = (slotTime, selectedDate) => {
+  try {
+    const now = new Date();
+    const todayFormatted = getLocalDateString(now);
+
+    if (selectedDate < todayFormatted) return true;
+    if (selectedDate > todayFormatted) return false;
+
+    // For today: check if current time is within 15 minutes of slot or past slot
+    const [h, m] = slotTime.split(':').map(Number);
+    const slotDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
+    const cutoffTime = new Date(slotDate.getTime() - 15 * 60 * 1000);
+    return now.getTime() >= cutoffTime.getTime();
+  } catch {
+    return false;
+  }
+};
+
+const STANDARD_SLOTS = [
+  '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+  '12:00', '12:30', '14:00', '14:30', '15:00', '15:30',
+  '16:00', '16:30', '17:00'
+];
+
+const buildDefaultSlotObjects = (dateStr) => {
+  return STANDARD_SLOTS.map(time => {
+    const expired = isSlotCutoff(time, dateStr);
+    return {
+      time,
+      is_available: !expired,
+      is_booked: false,
+      is_expired: expired
+    };
+  });
+};
+
 export default function BookingWizard({ doctors: propDoctors = [], selectedDoctorId, onClose }) {
   const [step, setStep] = useState(1);
   const [doctorsList, setDoctorsList] = useState(propDoctors && propDoctors.length > 0 ? propDoctors : DEFAULT_DOCTORS);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [currentTimeTick, setCurrentTimeTick] = useState(Date.now());
 
   // Specialty Filter & Search in Step 1
   const [selectedSpecialty, setSelectedSpecialty] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Form State
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateString(new Date());
   const [formData, setFormData] = useState({
     doctor_id: selectedDoctorId || (propDoctors?.[0]?.id || 1),
     appointment_date: todayStr,
-    appointment_time: '10:00',
+    appointment_time: '',
     patient_name: '',
     patient_phone: '',
     patient_email: '',
     reason_for_visit: 'Comprehensive Eye Examination & Vision Consultation'
   });
 
-  const [availableSlots, setAvailableSlots] = useState([
-    { time: '09:30', is_available: true },
-    { time: '10:00', is_available: true },
-    { time: '10:30', is_available: true },
-    { time: '11:00', is_available: true },
-    { time: '11:30', is_available: true },
-    { time: '14:00', is_available: true },
-    { time: '14:30', is_available: true },
-    { time: '15:00', is_available: true },
-    { time: '15:30', is_available: true },
-    { time: '16:00', is_available: true }
-  ]);
+  const [availableSlots, setAvailableSlots] = useState(() => buildDefaultSlotObjects(todayStr));
   const [isWorkingDay, setIsWorkingDay] = useState(true);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
 
   const dateInputRef = useRef(null);
+
+  // Real-time dynamic heartbeat ticker (evaluates slot cutoffs every 10 seconds)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTimeTick(Date.now());
+    }, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Bulletproof Doctor Portrait Avatars
   const doctorFallbacks = [
@@ -144,73 +187,65 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
     }
   }, [selectedDoctorId]);
 
-  // Real-time client-side slot cutoff helper (15 mins advance cutoff)
-  const isSlotCutoff = (slotTime, selectedDate) => {
-    try {
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
-      const currentDay = String(now.getDate()).padStart(2, '0');
-      const todayFormatted = `${currentYear}-${currentMonth}-${currentDay}`;
-
-      if (selectedDate < todayFormatted) return true;
-      if (selectedDate > todayFormatted) return false;
-
-      // For today: check if current time is within 15 minutes of slot or past slot
-      const [h, m] = slotTime.split(':').map(Number);
-      const slotDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
-      const cutoffTime = new Date(slotDate.getTime() - 15 * 60 * 1000);
-      return now >= cutoffTime;
-    } catch {
-      return false;
-    }
-  };
-
-  // Fetch Available Slots for Selected Doctor and Date
+  // Fetch Available Slots for Selected Doctor and Date with Live Real-Time Cutoff
   useEffect(() => {
-    if (formData.doctor_id && formData.appointment_date) {
-      setLoadingSlots(true);
-      fetch(`${API_BASE_URL}/api/appointments/available-slots?doctor_id=${formData.doctor_id}&date=${formData.appointment_date}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            setIsWorkingDay(data.is_working_day);
-            const rawSlots = data.all_slots && data.all_slots.length > 0 ? data.all_slots : [
-              { time: '09:30', is_available: true },
-              { time: '10:00', is_available: true },
-              { time: '10:30', is_available: true },
-              { time: '11:00', is_available: true },
-              { time: '11:30', is_available: true },
-              { time: '14:00', is_available: true },
-              { time: '14:30', is_available: true },
-              { time: '15:00', is_available: true },
-              { time: '15:30', is_available: true },
-              { time: '16:00', is_available: true }
-            ];
+    if (!formData.doctor_id || !formData.appointment_date) return;
 
-            // Re-verify slot availability with real-time cutoff
-            const computedSlots = rawSlots.map(s => {
-              const expired = isSlotCutoff(s.time, formData.appointment_date);
-              return {
-                ...s,
-                is_available: s.is_available && !expired,
-                is_expired: expired || s.is_expired
-              };
-            });
+    let isMounted = true;
+    setLoadingSlots(true);
 
-            setAvailableSlots(computedSlots);
-            const freeSlots = computedSlots.filter(s => s.is_available);
-            if (freeSlots.length > 0 && !freeSlots.some(s => s.time === formData.appointment_time)) {
-              setFormData(prev => ({ ...prev, appointment_time: freeSlots[0].time }));
-            }
-          }
-        })
-        .catch(err => {
-          console.error("Error fetching slots:", err);
-        })
-        .finally(() => setLoadingSlots(false));
+    fetch(`${API_BASE_URL}/api/appointments/available-slots?doctor_id=${formData.doctor_id}&date=${formData.appointment_date}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!isMounted) return;
+        if (data.success) {
+          setIsWorkingDay(data.is_working_day);
+          const rawSlots = (data.all_slots && data.all_slots.length > 0)
+            ? data.all_slots
+            : buildDefaultSlotObjects(formData.appointment_date);
+
+          const computedSlots = rawSlots.map(s => {
+            const expired = isSlotCutoff(s.time, formData.appointment_date);
+            return {
+              ...s,
+              is_available: (!s.is_booked && !expired && s.is_available !== false) || (!s.is_booked && !expired),
+              is_expired: expired || Boolean(s.is_expired)
+            };
+          });
+
+          setAvailableSlots(computedSlots);
+        } else {
+          setAvailableSlots(buildDefaultSlotObjects(formData.appointment_date));
+        }
+      })
+      .catch(err => {
+        if (!isMounted) return;
+        console.warn("Backend slots API unavailable, applying client-side live engine:", err);
+        setIsWorkingDay(true);
+        setAvailableSlots(buildDefaultSlotObjects(formData.appointment_date));
+      })
+      .finally(() => {
+        if (isMounted) setLoadingSlots(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [formData.doctor_id, formData.appointment_date, currentTimeTick]);
+
+  // Auto-Select Valid Active Future Slot
+  useEffect(() => {
+    const freeSlots = availableSlots.filter(s => s.is_available);
+    const isCurrentSlotValid = freeSlots.some(s => s.time === formData.appointment_time);
+
+    if (!isCurrentSlotValid) {
+      if (freeSlots.length > 0) {
+        setFormData(prev => ({ ...prev, appointment_time: freeSlots[0].time }));
+      } else {
+        setFormData(prev => ({ ...prev, appointment_time: '' }));
+      }
     }
-  }, [formData.doctor_id, formData.appointment_date]);
+  }, [availableSlots, formData.appointment_time]);
 
   const handleNext = () => {
     if (step === 1 && !formData.doctor_id) {
@@ -322,9 +357,8 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
   const quickDates = [];
   const curr = new Date();
   for (let i = 0; i < 14; i++) {
-    const d = new Date(curr);
-    d.setDate(curr.getDate() + i);
-    const dateStr = d.toISOString().split('T')[0];
+    const d = new Date(curr.getFullYear(), curr.getMonth(), curr.getDate() + i);
+    const dateStr = getLocalDateString(d);
     const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
     const monthName = d.toLocaleDateString('en-US', { month: 'short' });
     const dayNum = d.getDate();
@@ -714,7 +748,20 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                 ) : availableSlots.length === 0 ? (
                   <p className="text-sm text-slate-500">Loading consultation slots...</p>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-5">
+
+                    {/* Notice if no slots available for today */}
+                    {availableSlots.filter(s => s.is_available).length === 0 && (
+                      <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs sm:text-sm flex items-start space-x-3 shadow-sm">
+                        <AlertCircle className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" />
+                        <div>
+                          <p className="font-black text-slate-900">All consultation slots for today are closed.</p>
+                          <p className="text-amber-900 mt-1 leading-relaxed">
+                            Hospital booking policy requires slots to be booked at least 15 minutes before the start time. Please select <strong>Tomorrow</strong> or another date from the calendar, or call our 24x7 emergency helpline at <strong className="text-teal-900">+91 7733866682</strong>.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Morning Session */}
                     {morningSlots.length > 0 && (
@@ -733,17 +780,17 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                                 type="button"
                                 disabled={isClosed}
                                 onClick={() => setFormData({ ...formData, appointment_time: slotObj.time })}
-                                className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border flex flex-col items-center justify-center ${
+                                className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border flex flex-col items-center justify-center relative ${
                                   isClosed
-                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60'
+                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-55'
                                     : isSelected
-                                    ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105'
-                                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-slate-50 shadow-sm'
+                                    ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105 font-black'
+                                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-teal-50/50 shadow-sm cursor-pointer'
                                 }`}
                               >
-                                <span className={isClosed ? 'line-through' : ''}>{slotObj.time}</span>
+                                <span className={isClosed ? 'line-through text-slate-400 font-semibold' : ''}>{slotObj.time}</span>
                                 {isClosed && (
-                                  <span className="text-[9px] font-semibold text-slate-400 no-underline">
+                                  <span className="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded-md mt-0.5 no-underline">
                                     {slotObj.is_expired ? 'Closed' : 'Booked'}
                                   </span>
                                 )}
@@ -771,17 +818,17 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                                 type="button"
                                 disabled={isClosed}
                                 onClick={() => setFormData({ ...formData, appointment_time: slotObj.time })}
-                                className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border flex flex-col items-center justify-center ${
+                                className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border flex flex-col items-center justify-center relative ${
                                   isClosed
-                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60'
+                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-55'
                                     : isSelected
-                                    ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105'
-                                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-slate-50 shadow-sm'
+                                    ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105 font-black'
+                                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-teal-50/50 shadow-sm cursor-pointer'
                                 }`}
                               >
-                                <span className={isClosed ? 'line-through' : ''}>{slotObj.time}</span>
+                                <span className={isClosed ? 'line-through text-slate-400 font-semibold' : ''}>{slotObj.time}</span>
                                 {isClosed && (
-                                  <span className="text-[9px] font-semibold text-slate-400 no-underline">
+                                  <span className="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded-md mt-0.5 no-underline">
                                     {slotObj.is_expired ? 'Closed' : 'Booked'}
                                   </span>
                                 )}
@@ -809,17 +856,17 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                                 type="button"
                                 disabled={isClosed}
                                 onClick={() => setFormData({ ...formData, appointment_time: slotObj.time })}
-                                className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border flex flex-col items-center justify-center ${
+                                className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border flex flex-col items-center justify-center relative ${
                                   isClosed
-                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60'
+                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-55'
                                     : isSelected
-                                    ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105'
-                                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-slate-50 shadow-sm'
+                                    ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105 font-black'
+                                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-teal-50/50 shadow-sm cursor-pointer'
                                 }`}
                               >
-                                <span className={isClosed ? 'line-through' : ''}>{slotObj.time}</span>
+                                <span className={isClosed ? 'line-through text-slate-400 font-semibold' : ''}>{slotObj.time}</span>
                                 {isClosed && (
-                                  <span className="text-[9px] font-semibold text-slate-400 no-underline">
+                                  <span className="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded-md mt-0.5 no-underline">
                                     {slotObj.is_expired ? 'Closed' : 'Booked'}
                                   </span>
                                 )}
@@ -1025,7 +1072,7 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                 </div>
 
                 <div className="flex items-center justify-between text-xs pt-1 text-slate-500">
-                  <span>Facility: Medical Enclave, Main Road</span>
+                  <span>Facility: REH Medical Tower, Agra Road, Jaipur</span>
                   <span className="text-teal-700 font-bold">NABH Accredited</span>
                 </div>
               </div>

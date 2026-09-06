@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, ShieldCheck, Heart, ArrowUp, Clock, ShieldAlert } from 'lucide-react';
+import { Phone, Mail, ShieldCheck, ArrowUp, MapPin } from 'lucide-react';
 import WhatsAppIcon from './WhatsAppIcon';
 
 export default function Footer({ onBookClick }) {
@@ -9,20 +9,20 @@ export default function Footer({ onBookClick }) {
   };
 
   return (
-    <footer className="bg-slate-950 text-slate-400 pt-20 pb-10 border-t border-slate-800/80 relative overflow-hidden">
+    <footer className="bg-slate-950 text-slate-400 pt-12 pb-6 border-t border-slate-800/80 relative overflow-hidden">
       
-      {/* Subtle Background Lighting */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r from-transparent via-teal-500/40 to-transparent" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Ambient Top Glow Line */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-0.5 bg-gradient-to-r from-transparent via-teal-500/40 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-14 border-b border-slate-900">
+        {/* Main 4-Column Balanced Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-slate-900">
           
-          {/* Brand Info */}
-          <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center space-x-3">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" className="h-9 w-auto">
+          {/* Column 1: Brand, Address & Accreditation */}
+          <div className="space-y-3">
+            <Link to="/" className="flex items-center space-x-2.5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" className="h-8 w-auto">
                 <defs>
                   <linearGradient id="footer-eye-teal" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#38BDF8"/>
@@ -47,99 +47,98 @@ export default function Footer({ onBookClick }) {
               </svg>
 
               <div className="flex flex-col">
-                <span className="font-black text-xl text-white font-heading tracking-tight">
+                <span className="font-black text-lg text-white font-heading tracking-tight leading-tight">
                   REKHA <span className="text-teal-400">EYE</span> HOSPITAL
                 </span>
-                <span className="text-[9px] font-extrabold text-slate-500 uppercase tracking-widest">
-                  Super-Specialty LASIK &amp; Retina Institute
+                <span className="text-[8px] font-extrabold text-slate-500 uppercase tracking-wider">
+                  Super-Specialty LASIK &amp; Retina Center
                 </span>
               </div>
             </Link>
 
-            <p className="text-xs leading-relaxed text-slate-400 max-w-sm font-normal">
-              NABH-Accredited Eye Hospital &amp; Laser Center led by Founder Dr. Rekha Sisodiya. Delivering 6/6 precision vision restoration with German Carl Zeiss &amp; Alcon WaveLight refractive robotics since 1999.
+            <p className="text-xs leading-relaxed text-slate-400 font-normal">
+              NABH-accredited super-specialty eye hospital delivering 6/6 precision laser vision restoration with Carl Zeiss robotics.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold text-slate-300">
-              <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800">
-                <ShieldCheck className="w-4 h-4 text-teal-400" />
-                <span>NABH Accredited</span>
-              </div>
-              <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800">
-                <ShieldCheck className="w-4 h-4 text-cyan-400" />
+            {/* Hospital Physical Address */}
+            <div className="flex items-start space-x-2 text-xs text-slate-300 pt-0.5">
+              <MapPin className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+              <p className="leading-snug">
+                REH Medical Tower, Oppo. 52 Feet Hanuman ji, Agra Road, Jaipur - 303012
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 pt-1 text-[11px] font-semibold text-slate-300">
+              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-800">
+                <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+                <span>NABH</span>
+              </span>
+              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-800">
+                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
                 <span>ISO 9001:2015</span>
-              </div>
+              </span>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Column 2: Quick Links */}
           <div className="space-y-3">
             <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading">Hospital Pages</h4>
-            <ul className="space-y-2 text-xs font-medium">
+            <ul className="space-y-1.5 text-xs font-medium">
               <li><Link to="/about" className="hover:text-teal-400 transition-colors">About REH Heritage</Link></li>
-              <li><Link to="/treatments" className="hover:text-teal-400 transition-colors">Clinical Treatments</Link></li>
-              <li><Link to="/doctors" className="hover:text-teal-400 transition-colors">Surgeon Directory</Link></li>
-              <li><Link to="/technology" className="hover:text-teal-400 transition-colors">Carl Zeiss Laser Tech</Link></li>
+              <li><Link to="/treatments" className="hover:text-teal-400 transition-colors">Treatments &amp; Surgeries</Link></li>
+              <li><Link to="/doctors" className="hover:text-teal-400 transition-colors">Specialist Directory</Link></li>
+              <li><Link to="/technology" className="hover:text-teal-400 transition-colors">Zeiss Laser Technology</Link></li>
               <li><Link to="/patient-guide" className="hover:text-teal-400 transition-colors">Cashless TPA &amp; Insurance</Link></li>
-              <li><Link to="/gallery" className="hover:text-teal-400 transition-colors">Hospital Campus &amp; OT Tour</Link></li>
-              <li><Link to="/eye-health" className="hover:text-teal-400 transition-colors">Eye Health Knowledge Hub</Link></li>
-              <li><Link to="/contact" className="hover:text-teal-400 transition-colors">Contact &amp; Casualty Desk</Link></li>
+              <li><Link to="/gallery" className="hover:text-teal-400 transition-colors">Hospital Tour &amp; OT</Link></li>
+              <li><Link to="/contact" className="hover:text-teal-400 transition-colors">Contact &amp; Location</Link></li>
             </ul>
           </div>
 
-          {/* Eye Treatments Deep Links */}
+          {/* Column 3: Surgeries & Clinical Tools */}
           <div className="space-y-3">
-            <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading">Laser &amp; Surgeries</h4>
-            <ul className="space-y-2 text-xs font-medium">
+            <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading">Laser &amp; Clinical Tools</h4>
+            <ul className="space-y-1.5 text-xs font-medium">
               <li><Link to="/treatments?tab=lasik" className="hover:text-teal-400 transition-colors">Blade-Free Femto LASIK</Link></li>
               <li><Link to="/treatments?tab=cataract" className="hover:text-teal-400 transition-colors">Micro-Incision Cataract (MICS)</Link></li>
-              <li><Link to="/treatments?tab=icl" className="hover:text-teal-400 transition-colors">EVO+ ICL Lens Implants</Link></li>
-              <li><Link to="/treatments?tab=retina" className="hover:text-teal-400 transition-colors">Diabetic Vitreo-Retinopathy</Link></li>
-              <li><Link to="/treatments?tab=dryeye" className="hover:text-teal-400 transition-colors">Dry Eye Spa &amp; LipiFlow</Link></li>
-              <li><Link to="/treatments?tab=glaucoma" className="hover:text-teal-400 transition-colors">Selective Laser Trabeculoplasty</Link></li>
-              <li><Link to="/treatments?tab=pediatric" className="hover:text-teal-400 transition-colors">Pediatric Squint &amp; Lazy Eye</Link></li>
-            </ul>
-          </div>
-
-          {/* Interactive Tools & First Aid */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading">Clinical Tools &amp; Help</h4>
-            <ul className="space-y-2 text-xs font-medium">
+              <li><Link to="/treatments?tab=retina" className="hover:text-teal-400 transition-colors">Diabetic Vitreo-Retina Care</Link></li>
+              <li><Link to="/treatments?tab=dryeye" className="hover:text-teal-400 transition-colors">Dry Eye LipiFlow Spa</Link></li>
               <li><Link to="/eye-health?tab=tools" className="hover:text-teal-400 transition-colors">20-20-20 Eye Strain Timer</Link></li>
-              <li><Link to="/eye-health?tab=tools" className="hover:text-teal-400 transition-colors">LASIK Eligibility Checker</Link></li>
-              <li><Link to="/eye-health?tab=emergency" className="hover:text-rose-400 transition-colors">Ocular Emergency First-Aid</Link></li>
-              <li><Link to="/eye-health?tab=faqs" className="hover:text-teal-400 transition-colors">Patient FAQs &amp; Insurance</Link></li>
-              <li><Link to="/patient-guide" className="hover:text-teal-400 transition-colors">Empanelled TPAs List</Link></li>
-              <li><Link to="/book-appointment" className="hover:text-teal-400 transition-colors font-bold text-teal-300">Live Doctor Slot Booking</Link></li>
+              <li><Link to="/eye-health?tab=emergency" className="hover:text-rose-400 transition-colors font-semibold">Ocular Emergency First-Aid</Link></li>
+              <li><Link to="/book-appointment" className="hover:text-teal-300 font-bold text-teal-400 transition-colors">Live Slot Booking Wizard &rarr;</Link></li>
             </ul>
           </div>
 
-          {/* Contact & Hours */}
+          {/* Column 4: 24x7 Help Desk & Booking (Shifted Up) */}
           <div className="space-y-3">
-            <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading">24x7 Help Desk</h4>
-            <div className="space-y-2.5 text-xs">
+            <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading flex items-center space-x-1.5">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+              <span>24x7 Help Desk</span>
+            </h4>
+            <div className="space-y-2 text-xs">
               <a href="tel:+917733866682" className="flex items-center space-x-2 text-rose-400 font-bold hover:text-rose-300 transition-colors">
-                <Phone className="w-4 h-4 animate-pulse shrink-0" />
+                <Phone className="w-3.5 h-3.5 shrink-0" />
                 <span>Casualty: +91 7733866682</span>
               </a>
 
               <a href="https://wa.me/917733866682" target="_blank" rel="noreferrer" className="flex items-center space-x-2 text-[#25D366] font-semibold hover:text-[#20ba5a] transition-colors">
-                <WhatsAppIcon className="w-4 h-4 shrink-0 fill-current" />
+                <WhatsAppIcon className="w-3.5 h-3.5 shrink-0 fill-current" />
                 <span>WhatsApp: +91 7733866682</span>
               </a>
 
               <a href="mailto:info@rekhaeyehospital.com" className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
-                <Mail className="w-4 h-4 shrink-0 text-teal-400" />
+                <Mail className="w-3.5 h-3.5 shrink-0 text-teal-400" />
                 <span>info@rekhaeyehospital.com</span>
               </a>
 
-              <p className="text-slate-400 text-[11px]">OPD: Mon - Sat (8:30 AM - 7:30 PM)</p>
-              <p className="text-slate-400 text-[11px]">Casualty: 24 Hours Open (7 Days)</p>
+              <div className="text-[11px] text-slate-400 pt-0.5 space-y-0.5">
+                <p>OPD: Mon - Sat (8:30 AM - 7:30 PM)</p>
+                <p className="text-slate-500">Casualty &amp; Emergency: 24 Hours Open</p>
+              </div>
               
-              <div className="pt-2">
+              <div className="pt-1.5">
                 <Link
                   to="/book-appointment"
-                  className="block text-center w-full py-2.5 rounded-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold text-xs shadow-lg shadow-teal-600/20 transition-all"
+                  className="block text-center w-full py-2 px-3 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-bold text-xs shadow-md shadow-teal-600/20 transition-all transform hover:scale-[1.02] active:scale-95"
                 >
                   Book Doctor Consultation
                 </Link>
@@ -149,8 +148,8 @@ export default function Footer({ onBookClick }) {
 
         </div>
 
-        {/* Bottom Bar with Discrete Staff Portal Link */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 space-y-4 sm:space-y-0">
+        {/* Bottom Bar */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 space-y-3 sm:space-y-0">
           <div>
             &copy; {new Date().getFullYear()} Rekha Eye Hospital (REH). All rights reserved. NABH Standards.
           </div>
@@ -169,7 +168,7 @@ export default function Footer({ onBookClick }) {
               className="flex items-center space-x-1 text-slate-400 hover:text-white transition-colors"
             >
               <span>Back to top</span>
-              <ArrowUp className="w-3.5 h-3.5" />
+              <ArrowUp className="w-3 h-3" />
             </button>
           </div>
         </div>

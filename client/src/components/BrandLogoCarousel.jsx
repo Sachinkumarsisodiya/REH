@@ -1,313 +1,307 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
-  ShieldCheck, Award, ChevronLeft, ChevronRight, 
-  CheckCircle2, Building2, Zap, HeartPulse 
+  ShieldCheck, Award, Zap, HeartPulse, Building2, 
+  CheckCircle2, ArrowRight, ExternalLink, Sparkles, Star 
 } from 'lucide-react';
 
 export default function BrandLogoCarousel() {
   const [selectedItem, setSelectedItem] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const scrollRef = useRef(null);
-
-  // Self-running continuous auto-scroll loop
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    let animationFrameId;
-    const speed = 0.75; // pixels per tick
-
-    const step = () => {
-      if (!isHovered && el) {
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft = 0;
-        } else {
-          el.scrollLeft += speed;
-        }
-      }
-      animationFrameId = requestAnimationFrame(step);
-    };
-
-    animationFrameId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isHovered]);
 
   const brandItems = [
     {
       id: 'reh-flagship',
-      type: 'brand',
-      title: 'REH Super Specialty',
-      subtitle: 'Hospital & LASIK Center',
-      tag: 'Flagship Hospital',
-      accent: 'teal',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" className="h-8 w-auto">
+      category: 'Hospital Flagship',
+      title: 'Rekha Eye Hospital (REH)',
+      subtitle: 'Super-Specialty LASIK & Retina Center',
+      tag: 'Apex Clinical Center',
+      badgeColor: 'bg-teal-50 text-teal-800 border-teal-200',
+      logo: (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" className="h-9 w-auto">
           <defs>
-            <linearGradient id="blc-eye" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient id="blc-new-eye" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#0EA5E9"/>
               <stop offset="50%" stopColor="#06B6D4"/>
               <stop offset="100%" stopColor="#0D9488"/>
             </linearGradient>
           </defs>
           <path d="M 10 15 V 65 M 10 15 H 32 C 45 15, 48 27, 48 35 C 48 43, 42 48, 32 48 H 10 M 32 48 L 48 65" 
-                fill="none" stroke="#0D9488" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round"/>
+                fill="none" stroke="#0D9488" strokeWidth="7.5" strokeLinecap="round" strokeLinejoin="round"/>
           <g transform="translate(48, 15)">
-            <path d="M 6 0 V 50 M 6 0 H 30 M 6 50 H 30" fill="none" stroke="#06B6D4" strokeWidth="7" strokeLinecap="round"/>
-            <circle cx="20" cy="25" r="11" fill="none" stroke="url(#blc-eye)" strokeWidth="4.5"/>
+            <path d="M 6 0 V 50 M 6 0 H 30 M 6 50 H 30" fill="none" stroke="#06B6D4" strokeWidth="7.5" strokeLinecap="round"/>
+            <circle cx="20" cy="25" r="11" fill="none" stroke="url(#blc-new-eye)" strokeWidth="5"/>
             <circle cx="20" cy="25" r="4.5" fill="#38BDF8"/>
           </g>
           <g transform="translate(86, 15)">
-            <path d="M 6 0 V 50 M 30 0 V 50 M 6 25 H 30" fill="none" stroke="#0F172A" strokeWidth="7" strokeLinecap="round"/>
+            <path d="M 6 0 V 50 M 30 0 V 50 M 6 25 H 30" fill="none" stroke="#0F172A" strokeWidth="7.5" strokeLinecap="round"/>
           </g>
         </svg>
       ),
-      description: 'NABH-accredited tertiary eye care hospital founded by Dr. Rekha Sisodiya, delivering 25+ years of clinical excellence in Rajasthan.'
+      highlight: '25+ Years Legacy • 50,000+ Successful Surgeries',
+      details: 'Founded by Dr. Rekha Sisodiya (AIIMS Alumnus, London Fellow). State-of-the-art super-specialty eye care equipped with sterile Class-100 Modular OTs and German Carl Zeiss laser suites.'
     },
     {
       id: 'nabh',
-      type: 'accreditation',
-      title: 'NABH Accredited',
-      subtitle: 'National Quality Standards',
-      tag: 'National Certification',
-      accent: 'emerald',
-      icon: (
-        <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center font-black text-emerald-700 text-xs shadow-inner">
-          <ShieldCheck className="w-6 h-6 text-emerald-600" />
+      category: 'National Accreditation',
+      title: 'NABH Accredited Hospital',
+      subtitle: 'National Quality & Patient Safety Benchmark',
+      tag: 'Highest National Honor',
+      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+      logo: (
+        <div className="flex items-center space-x-2 px-3 py-1.5 rounded-2xl bg-emerald-600 text-white font-black text-xs shadow-md shadow-emerald-600/30">
+          <ShieldCheck className="w-5 h-5 text-emerald-100" />
+          <span className="tracking-wide text-[13px]">NABH CERTIFIED</span>
         </div>
       ),
-      description: 'Full National Accreditation Board for Hospitals & Healthcare Providers certification for highest patient safety and surgical sterility.'
+      highlight: 'Zero Infection Record • 100% Surgical Sterility',
+      details: 'National Accreditation Board for Hospitals & Healthcare Providers certification certifying top-tier clinical hygiene, medication safety, and patient-first medical protocols.'
     },
     {
       id: 'zeiss',
-      type: 'tech',
-      title: 'Carl Zeiss Meditec',
-      subtitle: 'German Optical Laser Partner',
-      tag: 'Technology Suite',
-      accent: 'sky',
-      icon: (
-        <div className="px-2.5 py-1.5 rounded-xl bg-blue-900 text-white font-black text-[13px] tracking-wider shadow-md">
-          ZEISS
+      category: 'German Laser Partner',
+      title: 'Carl Zeiss Meditec (Germany)',
+      subtitle: 'VisuMax Femtosecond & OPMI Lumera 700',
+      tag: '500 kHz Laser Speed',
+      badgeColor: 'bg-blue-50 text-blue-800 border-blue-200',
+      logo: (
+        <div className="px-3.5 py-1.5 rounded-2xl bg-[#002f6c] text-white font-black text-xs tracking-wider shadow-md shadow-blue-900/30 flex items-center space-x-1.5">
+          <span className="text-sm font-black">ZEISS</span>
+          <span className="text-[10px] text-blue-200 font-semibold uppercase">Optics</span>
         </div>
       ),
-      description: 'Equipped with VisuMax 500 kHz Femtosecond laser robotics, IOLMaster 700 biometry, and Lumera 700 3D surgical microscopes.'
+      highlight: 'Sub-Micron Laser Flaps • Curved Contact Glass',
+      details: 'World standard in blade-free femtosecond corneal lenticule extraction and precision 3D surgical visualization microscopes for cataract and retinal operations.'
     },
     {
       id: 'alcon',
-      type: 'tech',
-      title: 'Alcon WaveLight',
-      subtitle: 'Contoura Vision & Centurion',
+      category: 'Refractive Robotics',
+      title: 'Alcon WaveLight & Centurion',
+      subtitle: 'Contoura Vision & Active Fluidics Phaco',
       tag: 'US-FDA Approved',
-      accent: 'cyan',
-      icon: (
-        <div className="px-2.5 py-1.5 rounded-xl bg-cyan-700 text-white font-extrabold text-[12px] tracking-wide shadow-md">
+      badgeColor: 'bg-cyan-50 text-cyan-800 border-cyan-200',
+      logo: (
+        <div className="px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-black text-xs tracking-wide shadow-md shadow-cyan-600/30">
           Alcon
         </div>
       ),
-      description: 'Active fluidics phacoemulsification and 1050 Hz multi-spatial excimer laser tracking for ultra-fast spectacle removal.'
+      highlight: '1050 Hz Multi-Spatial Eye Tracker • 1.4s/Diopter',
+      details: 'Topography-guided Contoura Vision mapping 22,000 corneal elevation points for crystal clear 6/6 HD vision restoration.'
     },
     {
       id: 'aiims',
-      type: 'alumni',
-      title: 'AIIMS New Delhi',
-      subtitle: 'Alumni Clinical Faculty',
+      category: 'Medical Faculty',
+      title: 'AIIMS New Delhi Alumni',
+      subtitle: 'Apex Medical Institute Surgical Leadership',
       tag: 'Premier Medical Legacy',
-      accent: 'teal',
-      icon: (
-        <div className="w-10 h-10 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-800 font-black text-xs shadow-inner">
-          <Award className="w-6 h-6 text-teal-700" />
+      badgeColor: 'bg-teal-50 text-teal-800 border-teal-200',
+      logo: (
+        <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-2xl bg-teal-900 text-teal-200 font-bold text-xs shadow-md">
+          <Award className="w-4 h-4 text-teal-400" />
+          <span>AIIMS ALUMNI</span>
         </div>
       ),
-      description: 'Surgeons trained at All India Institute of Medical Sciences (AIIMS, New Delhi) with international fellowship credentials.'
+      highlight: 'Trained at India’s #1 Medical Institute',
+      details: 'Lead surgeons and clinical directors trained at All India Institute of Medical Sciences (AIIMS, New Delhi) with prestigious international surgical fellowships.'
     },
     {
       id: 'heidelberg',
-      type: 'tech',
-      title: 'Heidelberg OCT',
-      subtitle: 'High-Res Retinal Imaging',
-      tag: '3D Diagnostics',
-      accent: 'blue',
-      icon: (
-        <div className="px-2.5 py-1.5 rounded-xl bg-slate-900 text-cyan-400 font-mono font-bold text-[11px] border border-cyan-500/30">
+      category: '3D Diagnostics',
+      title: 'Heidelberg Spectralis OCT',
+      subtitle: '3-Micron Cross-Sectional Retinal Scanner',
+      tag: 'German Precision',
+      badgeColor: 'bg-indigo-50 text-indigo-800 border-indigo-200',
+      logo: (
+        <div className="px-3.5 py-1.5 rounded-2xl bg-slate-900 text-cyan-400 font-mono font-bold text-xs border border-cyan-500/40 shadow-md">
           HEIDELBERG
         </div>
       ),
-      description: 'Spectralis Spectral-Domain OCT providing 3-micron optical sectioning for early glaucoma and diabetic retinopathy detection.'
+      highlight: 'Spectral-Domain OCT • 40,000 A-Scans/sec',
+      details: 'Ultra-high resolution 3D cross-sectional scanning of macular layers and optic nerve fibers for early glaucoma and diabetic retinopathy detection.'
     },
     {
       id: 'star-health',
-      type: 'tpa',
-      title: 'Star Health Allied',
-      subtitle: '100% Cashless Mediclaim',
-      tag: 'Cashless TPA Partner',
-      accent: 'teal',
-      icon: (
-        <div className="px-2.5 py-1 rounded-xl bg-teal-700 text-white font-bold text-xs flex items-center space-x-1">
-          <span>★</span>
+      category: 'Cashless TPA Network',
+      title: 'Star Health & Allied Insurance',
+      subtitle: '100% Cashless Hospitalization Pre-Auth',
+      tag: 'Direct Settlement',
+      badgeColor: 'bg-teal-50 text-teal-800 border-teal-200',
+      logo: (
+        <div className="flex items-center space-x-1 px-3 py-1.5 rounded-2xl bg-teal-700 text-white font-black text-xs shadow-md shadow-teal-700/30">
+          <span className="text-amber-300 text-sm">★</span>
           <span>STAR HEALTH</span>
         </div>
       ),
-      description: 'Direct cashless hospitalization pre-authorizations for cataract, retinal vitrectomy, and glaucoma surgeries.'
+      highlight: 'Zero Out-Of-Pocket Expense for Covered Surgeries',
+      details: 'Fast-track pre-authorization approvals and paperless claims for cataract, LASIK, and vitreo-retina operations.'
     },
     {
       id: 'cghs',
-      type: 'govt',
-      title: 'CGHS & ECHS Panels',
-      subtitle: 'Govt. Empanelled Center',
-      tag: 'Govt. Healthcare',
-      accent: 'amber',
-      icon: (
-        <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-800 font-black text-[11px] shadow-inner">
-          <Building2 className="w-5 h-5 text-amber-700" />
+      category: 'Govt. Healthcare Panel',
+      title: 'CGHS & ECHS Empanelled',
+      subtitle: 'Central Govt. & Defence Veterans Super-Specialty',
+      tag: 'Govt. Panel',
+      badgeColor: 'bg-amber-50 text-amber-800 border-amber-200',
+      logo: (
+        <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-2xl bg-amber-700 text-white font-black text-xs shadow-md shadow-amber-700/30">
+          <Building2 className="w-4 h-4 text-amber-200" />
+          <span>CGHS / ECHS</span>
         </div>
       ),
-      description: 'Officially recognized hospital panel for Central Government Employees, Defence Veterans, and State Health Schemes.'
+      highlight: 'Empanelled for All Super-Specialty Eye Surgeries',
+      details: 'Officially recognized healthcare destination for Central Government Employees, Pensioners, Ex-Servicemen (ECHS), and Railway beneficiaries.'
     },
     {
       id: 'lipiflow',
-      type: 'tech',
-      title: 'LipiFlow Thermal Spa',
-      subtitle: 'Meibomian Dry Eye System',
-      tag: 'Johnson & Johnson',
-      accent: 'rose',
-      icon: (
-        <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700 font-bold text-xs">
-          <HeartPulse className="w-5 h-5 text-rose-600" />
+      category: 'Dry Eye Therapy',
+      title: 'LipiFlow Thermal Pulsation',
+      subtitle: 'Johnson & Johnson Vision Dry Eye Clinic',
+      tag: 'Meibomian Gland Spa',
+      badgeColor: 'bg-rose-50 text-rose-800 border-rose-200',
+      logo: (
+        <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-2xl bg-rose-600 text-white font-black text-xs shadow-md shadow-rose-600/30">
+          <HeartPulse className="w-4 h-4 text-rose-200" />
+          <span>LipiFlow Spa</span>
         </div>
       ),
-      description: 'Inner-eyelid thermal pulsation therapy delivering immediate and sustained relief from chronic computer screen dry eye syndrome.'
+      highlight: 'Patented Thermal Inner-Eyelid Unclogging',
+      details: 'Clinical therapeutic relief from screen fatigue, redness, and chronic dry eyes with automated thermal pulsation and LipiScan meibography.'
     },
     {
-      id: 'iso-cert',
-      type: 'accreditation',
-      title: 'ISO 9001:2015',
-      subtitle: 'Quality Management Certified',
+      id: 'iso',
+      category: 'Quality Standard',
+      title: 'ISO 9001:2015 Certified',
+      subtitle: 'International Clinical Quality Protocols',
       tag: 'Global Standard',
-      accent: 'slate',
-      icon: (
-        <div className="w-10 h-10 rounded-2xl bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-800 font-black text-[10px]">
-          ISO 9001
+      badgeColor: 'bg-slate-50 text-slate-800 border-slate-200',
+      logo: (
+        <div className="px-3 py-1.5 rounded-2xl bg-slate-800 text-white font-black text-xs tracking-wider shadow-md">
+          ISO 9001:2015
         </div>
       ),
-      description: 'Strict adherence to international standards in clinical hygiene, sterile OT airflow, and patient care workflows.'
+      highlight: 'Global Clinical & Operational Audits',
+      details: 'Certified quality management workflows ensuring error-free surgical scheduling, patient care transparency, and clinical excellence.'
     }
   ];
 
-  // Double items for seamless scrolling marquee
-  const marqueeItems = [...brandItems, ...brandItems];
-
-  const handleManualScroll = (direction) => {
-    if (scrollRef.current) {
-      const scrollAmount = direction === 'left' ? -320 : 320;
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
+  // Repeat for seamless infinite marquee loop
+  const infiniteCards = [...brandItems, ...brandItems];
 
   return (
-    <section className="relative py-10 sm:py-14 bg-gradient-to-b from-white via-teal-50/25 to-slate-50 border-y border-slate-200/80 overflow-hidden">
+    <section className="py-14 sm:py-20 bg-gradient-to-b from-slate-50 via-teal-50/20 to-white border-y border-slate-200 relative overflow-hidden">
       
-      {/* Background Glows */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Background Ambient Glows */}
+      <div className="absolute top-1/2 left-10 -translate-y-1/2 w-96 h-96 bg-teal-400/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 right-10 -translate-y-1/2 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-8">
         
-        {/* Header Ribbon Title */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-3">
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2">
-              <span className="w-6 h-1 bg-teal-600 rounded-full"></span>
-              <span className="text-teal-800 font-extrabold uppercase tracking-widest text-[11px] sm:text-xs">
-                Hospital Accreditations &amp; Technology Partners
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
-              Trusted by Leading <span className="text-teal-700">Medical Boards &amp; Global Laser Brands</span>
-            </h2>
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-teal-50 border border-teal-200/90 text-teal-800 text-xs font-black uppercase tracking-wider shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-teal-600 animate-pulse" />
+            <span>Hospital Accreditations &amp; Global Technology Suite</span>
           </div>
 
-          {/* Left/Right Manual Controls */}
-          <div className="flex items-center space-x-2 self-start md:self-auto">
-            <button
-              onClick={() => handleManualScroll('left')}
-              className="p-2 rounded-2xl bg-white hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200 shadow-sm hover:shadow transition-all"
-              aria-label="Previous brands"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleManualScroll('right')}
-              className="p-2 rounded-2xl bg-white hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200 shadow-sm hover:shadow transition-all"
-              aria-label="Next brands"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-950 font-heading tracking-tight">
+            Certified by <span className="bg-gradient-to-r from-teal-700 via-cyan-700 to-sky-700 bg-clip-text text-transparent">National Boards</span> &amp; Powered by World Laser Leaders
+          </h2>
+
+          <p className="text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+            Rekha Eye Hospital unites apex national healthcare credentials with US-FDA approved German Carl Zeiss &amp; Alcon laser robotics for micrometer-level surgical perfection.
+          </p>
         </div>
 
-        {/* Carousel Track */}
-        <div className="relative">
-          {/* Side Fading Vignette Gradients */}
-          <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none" />
+        {/* Self-Running Infinite Smooth Marquee Carousel */}
+        <div className="relative overflow-hidden py-4 -mx-4 sm:-mx-6 lg:-mx-8">
+          
+          {/* Side Fading Vignette Masks */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent z-20 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent z-20 pointer-events-none" />
 
-          {/* Scrolling Track */}
-          <div
-            ref={scrollRef}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            onTouchStart={() => setIsHovered(true)}
-            onTouchEnd={() => setIsHovered(false)}
-            className="flex items-center space-x-4 overflow-x-auto scrollbar-none py-2 px-2 select-none"
-            style={{
-              scrollBehavior: 'auto'
-            }}
-          >
-            {marqueeItems.map((item, index) => (
+          {/* Smooth Continuous Marquee Track */}
+          <div className="animate-marquee-smooth space-x-5 px-4">
+            {infiniteCards.map((item, idx) => (
               <div
-                key={`${item.id}-${index}`}
+                key={`${item.id}-${idx}`}
                 onClick={() => setSelectedItem(item)}
-                className="group shrink-0 w-[250px] sm:w-[270px] p-3.5 sm:p-4 rounded-3xl bg-white hover:bg-teal-50/50 border border-slate-200 hover:border-teal-400 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 relative"
+                className="w-[300px] sm:w-[340px] p-5 rounded-3xl bg-white border border-slate-200/90 hover:border-teal-500 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group shrink-0 relative overflow-hidden"
               >
-                <div className="flex items-center space-x-3">
-                  <div className="shrink-0 flex items-center justify-center">
-                    {item.icon}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700">
-                        {item.tag}
-                      </span>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <div className="font-extrabold text-slate-900 text-xs sm:text-sm truncate group-hover:text-teal-800 transition-colors">
-                      {item.title}
-                    </div>
-                    <div className="text-[11px] text-slate-500 truncate font-medium">
-                      {item.subtitle}
-                    </div>
-                  </div>
+                {/* Top Glowing Accent Line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 via-cyan-500 to-sky-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                {/* Card Header */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="shrink-0">{item.logo}</div>
+                  <span className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border ${item.badgeColor}`}>
+                    {item.tag}
+                  </span>
                 </div>
+
+                {/* Card Body */}
+                <div className="space-y-1">
+                  <div className="text-[11px] font-bold text-teal-700 uppercase tracking-wider">
+                    {item.category}
+                  </div>
+                  <h3 className="text-base font-black text-slate-900 group-hover:text-teal-800 transition-colors line-clamp-1">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium line-clamp-1">
+                    {item.subtitle}
+                  </p>
+                </div>
+
+                {/* Highlight Strip */}
+                <div className="p-2.5 rounded-2xl bg-slate-50 group-hover:bg-teal-50/60 border border-slate-200/80 group-hover:border-teal-200 transition-colors text-[11px] font-semibold text-slate-700 flex items-center justify-between">
+                  <span className="truncate pr-2">{item.highlight}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-teal-600 shrink-0 group-hover:translate-x-1 transition-transform" />
+                </div>
+
               </div>
             ))}
           </div>
+
         </div>
 
-        {/* Micro-Trust Bottom Banner */}
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-1 text-xs font-semibold text-slate-600">
-          <span className="flex items-center space-x-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            <strong className="text-slate-900">NABH Accredited</strong> Excellence
-          </span>
-          <span className="text-slate-300 hidden sm:inline">&bull;</span>
-          <span className="flex items-center space-x-1.5">
-            <Zap className="w-3.5 h-3.5 text-sky-600" />
-            <span>German Carl Zeiss Laser Robotics</span>
-          </span>
-          <span className="text-slate-300 hidden sm:inline">&bull;</span>
-          <span className="flex items-center space-x-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
-            <span>30+ Cashless TPA &amp; CGHS Network</span>
-          </span>
+        {/* Bottom 4 Key Trust Metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4 max-w-5xl mx-auto pt-2">
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center space-x-3 text-left">
+            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 font-bold">
+              <ShieldCheck className="w-5 h-5 text-teal-600" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-slate-900">NABH Standards</div>
+              <div className="text-[11px] text-slate-500 font-medium">100% Sterile OTs</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center space-x-3 text-left">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center shrink-0 font-bold">
+              <Zap className="w-5 h-5 text-sky-600" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-slate-900">Carl Zeiss Laser</div>
+              <div className="text-[11px] text-slate-500 font-medium">500 kHz Femto Speed</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center space-x-3 text-left">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 font-bold">
+              <Award className="w-5 h-5 text-emerald-600" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-slate-900">AIIMS Leadership</div>
+              <div className="text-[11px] text-slate-500 font-medium">100+ Yrs Exp Faculty</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center space-x-3 text-left">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 font-bold">
+              <Building2 className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-slate-900">30+ Cashless TPAs</div>
+              <div className="text-[11px] text-slate-500 font-medium">CGHS &amp; ECHS Panels</div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -319,41 +313,42 @@ export default function BrandLogoCarousel() {
           onClick={() => setSelectedItem(null)}
         >
           <div 
-            className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5"
+            className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                {selectedItem.icon}
-                <div>
-                  <div className="text-xs font-bold text-teal-700 uppercase tracking-wider">
-                    {selectedItem.tag}
-                  </div>
-                  <h3 className="text-lg font-black text-slate-950">
-                    {selectedItem.title}
-                  </h3>
-                </div>
+            <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="space-y-1">
+                <span className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border ${selectedItem.badgeColor}`}>
+                  {selectedItem.tag}
+                </span>
+                <h3 className="text-xl font-black text-slate-950 font-heading pt-1">
+                  {selectedItem.title}
+                </h3>
+                <p className="text-xs text-teal-700 font-bold">
+                  {selectedItem.subtitle}
+                </p>
               </div>
+
               <button
                 onClick={() => setSelectedItem(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm"
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm shrink-0"
               >
                 &times;
               </button>
             </div>
 
             <p className="text-sm text-slate-600 leading-relaxed">
-              {selectedItem.description}
+              {selectedItem.details}
             </p>
 
-            <div className="p-4 rounded-2xl bg-teal-50 border border-teal-100 flex items-center space-x-3 text-xs text-teal-900 font-semibold">
+            <div className="p-4 rounded-2xl bg-teal-50 border border-teal-200 text-xs text-teal-900 font-semibold flex items-center space-x-2.5">
               <CheckCircle2 className="w-5 h-5 text-teal-600 shrink-0" />
-              <span>Standard operating benchmark at Rekha Eye Hospital (REH).</span>
+              <span>Standard operating clinical protocol at Rekha Eye Hospital (REH).</span>
             </div>
 
             <button
               onClick={() => setSelectedItem(null)}
-              className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-teal-700 text-white font-bold text-xs transition-colors"
+              className="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-teal-700 text-white font-bold text-xs shadow-md transition-colors"
             >
               Close Details
             </button>

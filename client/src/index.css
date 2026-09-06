@@ -60,11 +60,32 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background: #F1F5F9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #0D9488;
+  background: #CBD5E1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0F766E;
+  background: #94A3B8;
+}
+
+/* Pure CSS Smooth Infinite Marquee */
+@keyframes continuous-marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-smooth {
+  display: flex;
+  width: max-content;
+  animation: continuous-marquee 38s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-smooth:hover {
+  animation-play-state: paused;
 }
 
 /* Shimmer Skeleton Loading */

@@ -3,14 +3,14 @@ import json
 import http.client
 from urllib.parse import quote, urlparse
 
-# WhatsApp microservice ka address (.env se ya default)
+# WhatsApp microservice endpoint URL (from environment or default localhost:3001)
 WA_SERVICE_URL = os.getenv('WHATSAPP_SERVICE_URL', 'http://localhost:3001')
 
 
 def _call_whatsapp_service(phone: str, message: str) -> dict:
     """
-    Internal helper — port 3001 pe chal rahe Node.js
-    whatsapp-web.js microservice ko HTTP POST karta hai.
+    Internal helper — Dispatches an HTTP POST request to the Node.js
+    whatsapp-web.js microservice running on port 3001.
     """
     try:
         parsed = urlparse(WA_SERVICE_URL)
@@ -30,7 +30,7 @@ def _call_whatsapp_service(phone: str, message: str) -> dict:
     except ConnectionRefusedError:
         return {
             'success': False,
-            'error': 'WhatsApp service nahi chal rahi (port 3001). node index.js chalao.'
+            'error': 'WhatsApp microservice unavailable (port 3001). Please ensure Node.js service is running.'
         }
     except Exception as e:
         return {'success': False, 'error': str(e)}
@@ -38,8 +38,8 @@ def _call_whatsapp_service(phone: str, message: str) -> dict:
 
 def send_whatsapp_auto(phone: str, message: str) -> dict:
     """
-    WhatsApp message AUTOMATICALLY bhejta hai background mein.
-    Node.js whatsapp-web.js service se connect hota hai (port 3001).
+    Dispatches automated WhatsApp notification in the background
+    via the Node.js whatsapp-web.js microservice (port 3001).
     """
     result = _call_whatsapp_service(phone, message)
 
@@ -59,9 +59,8 @@ def send_whatsapp_auto(phone: str, message: str) -> dict:
 
 def send_sms_notification(phone_number: str, message_text: str) -> bool:
     """
-    SMS bhejta hai Fast2SMS API se.
-    Agar FAST2SMS_API_KEY .env mein hai toh real SMS,
-    warna terminal pe log karta hai (dev mode).
+    Dispatches transactional SMS via Fast2SMS gateway.
+    Falls back to development console logging if API key is not configured.
     """
     clean_phone = ''.join(filter(str.isdigit, phone_number))
     if len(clean_phone) == 10:
@@ -94,7 +93,7 @@ def send_sms_notification(phone_number: str, message_text: str) -> bool:
 
 def send_whatsapp_notification(phone_number: str, message_text: str) -> str:
     """
-    Legacy helper — sirf wa.me fallback link return karta hai.
+    Fallback helper — returns a direct wa.me WhatsApp URL.
     """
     clean_phone = ''.join(filter(str.isdigit, phone_number))
     if len(clean_phone) == 10:

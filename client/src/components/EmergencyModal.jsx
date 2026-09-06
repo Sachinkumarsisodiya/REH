@@ -77,7 +77,7 @@ export default function EmergencyModal({ isOpen, onClose }) {
           </div>
           <div className="flex items-center space-x-1.5">
             <MapPin className="w-3.5 h-3.5 text-teal-400" />
-            <span>Medical Enclave, Main Road</span>
+            <span>Agra Road, Jaipur</span>
           </div>
         </div>
 

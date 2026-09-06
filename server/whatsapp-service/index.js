@@ -75,28 +75,28 @@ const client = new Client({
 client.on('qr', (qr) => {
     currentQR = qr;
     isReady = false;
-    console.log('\n[QR] Naya QR generate hua!');
-    console.log('[QR] Browser mein kholo: /qr');
-    console.log('[QR] Wahan se apne phone se scan karo.\n');
+    console.log('\n[QR] New QR Code generated.');
+    console.log('[QR] Open in browser: /qr');
+    console.log('[QR] Scan using WhatsApp on your device.\n');
     qrcode.generate(qr, { small: true });
 });
 
 client.on('authenticated', () => {
     currentQR = null;
-    console.log('\n✅ WhatsApp AUTHENTICATED! Session save ho gayi.\n');
+    console.log('\n✅ WhatsApp AUTHENTICATED! Session saved successfully.\n');
 });
 
 client.on('auth_failure', () => {
     isReady = false;
-    console.log('\n❌ Auth fail — session folder delete karo aur restart karo.\n');
+    console.log('\n❌ Authentication failed — delete session directory and restart.\n');
 });
 
 client.on('ready', () => {
     isReady = true;
     currentQR = null;
     console.log('\n╔══════════════════════════════════════════════╗');
-    console.log('║  ✅ WhatsApp READY — Auto-send active!        ║');
-    console.log('║  Port pe API ready hai.                       ║');
+    console.log('║  ✅ WhatsApp READY — Automated Dispatch Active║');
+    console.log('║  API listening on designated port.           ║');
     console.log('╚══════════════════════════════════════════════╝\n');
 });
 
@@ -105,13 +105,13 @@ client.on('disconnected', (reason) => {
     console.log('\n⚠️  WhatsApp disconnected:', reason, '\n');
 });
 
-console.log('\n🚀 WhatsApp Service start ho rahi hai...\n');
+console.log('\n🚀 Starting WhatsApp Service...\n');
 client.initialize().catch(err => {
     console.error('❌ Failed to initialize WhatsApp client:', err);
 });
 
 // ─────────────────────────────────────────────
-//  QR Code Webpage — Browser se scan karo
+//  QR Code Webpage — Device Pairing Portal
 // ─────────────────────────────────────────────
 app.get('/qr', async (req, res) => {
     if (isReady) {
@@ -132,7 +132,7 @@ app.get('/qr', async (req, res) => {
             </head>
             <body>
                 <div class="badge">✅ WhatsApp Connected & Ready!</div>
-                <p>Auto-send active hai. Is page ko band kar sakte ho.</p>
+                <p>Automated notification engine is active. You may close this window.</p>
             </body>
             </html>
         `);
@@ -144,7 +144,7 @@ app.get('/qr', async (req, res) => {
             <html>
             <head>
                 <meta charset="UTF-8" http-equiv="refresh" content="3">
-                <title>REH WhatsApp — Loading</title>
+                <title>REH WhatsApp — Initializing</title>
                 <style>
                     body { font-family: sans-serif; background: #0f172a; color: #fff;
                            display: flex; align-items: center; justify-content: center;
@@ -156,8 +156,8 @@ app.get('/qr', async (req, res) => {
             </head>
             <body>
                 <div class="spin">⏳</div>
-                <p>WhatsApp client initialize ho raha hai... 10-20 seconds wait karo.</p>
-                <p style="font-size:12px">Ye page auto-refresh hoga.</p>
+                <p>Initializing WhatsApp client... Please wait 10-20 seconds.</p>
+                <p style="font-size:12px">This page will automatically refresh.</p>
                 <script>setTimeout(() => location.reload(), 3000);</script>
             </body>
             </html>
@@ -176,7 +176,7 @@ app.get('/qr', async (req, res) => {
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>REH WhatsApp — Scan QR</title>
+            <title>REH WhatsApp — Pair Device</title>
             <style>
                 * { box-sizing: border-box; margin: 0; padding: 0; }
                 body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #fff;
@@ -208,23 +208,23 @@ app.get('/qr', async (req, res) => {
         <body>
             <div class="card">
                 <div class="logo">🏥 REH WhatsApp</div>
-                <div class="subtitle">Rekha Eye Hospital — Auto Message Service</div>
+                <div class="subtitle">Rekha Eye Hospital — Automated Notification Gateway</div>
 
-                <div class="badge">📱 Phone se scan karo</div>
+                <div class="badge">📱 Scan with phone</div>
 
                 <div class="qr-wrap">
                     <img src="${qrDataUrl}" width="288" height="288" alt="WhatsApp QR Code">
                 </div>
 
                 <div class="steps">
-                    <p><strong>Step 1:</strong> Phone pe WhatsApp kholo</p>
-                    <p><strong>Step 2:</strong> 3 dots (⋮) → <strong>Linked Devices</strong></p>
-                    <p><strong>Step 3:</strong> <strong>Link a Device</strong> tap karo</p>
-                    <p><strong>Step 4:</strong> Upar wala QR camera se scan karo</p>
+                    <p><strong>Step 1:</strong> Open WhatsApp on your mobile phone</p>
+                    <p><strong>Step 2:</strong> Tap Menu (⋮) or Settings → <strong>Linked Devices</strong></p>
+                    <p><strong>Step 3:</strong> Tap <strong>Link a Device</strong></p>
+                    <p><strong>Step 4:</strong> Point your camera to scan the QR code above</p>
                 </div>
 
                 <div class="refresh-bar"></div>
-                <div class="timer">QR 30 sec mein expire hoga — page auto-refresh hoga</div>
+                <div class="timer">QR expires in 30 seconds — page refreshes automatically</div>
             </div>
             <script>
                 setTimeout(() => location.reload(), 30000);
@@ -251,13 +251,13 @@ app.post('/send-message', async (req, res) => {
     const { phone, message } = req.body;
 
     if (!phone || !message) {
-        return res.status(400).json({ success: false, error: 'phone aur message required hain' });
+        return res.status(400).json({ success: false, error: 'Phone number and message are required.' });
     }
 
     if (!isReady) {
         return res.status(503).json({
             success: false,
-            error: 'WhatsApp ready nahi hai. /qr pe QR scan karo.'
+            error: 'WhatsApp service is not authenticated. Please scan QR at /qr endpoint.'
         });
     }
 

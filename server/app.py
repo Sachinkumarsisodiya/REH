@@ -4,14 +4,14 @@ import io
 import logging
 from sqlalchemy import text
 
-# Windows UTF-8 fix — emoji aur unicode characters print karne ke liye
+# Windows UTF-8 encoding support for standard logging output
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 if hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 from dotenv import load_dotenv
-load_dotenv()  # .env file se environment variables load karo (FAST2SMS_API_KEY, etc.)
+load_dotenv()  # Load environment variables from .env file
 
 from flask import Flask, jsonify
 from flask_cors import CORS

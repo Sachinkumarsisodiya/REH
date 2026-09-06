@@ -43,15 +43,15 @@ export default function Services({ onBookClick }) {
       features: ['Spectral Domain OCT Diagnostics', 'Anti-VEGF Intravitreal Injections', '23G/25G Sutureless Vitrectomy', 'Retinal Tear Laser Photocoagulation', 'Fluorescein Angiography (FFA)']
     },
     {
-      id: 'glaucoma',
-      icon: Shield,
-      title: 'Glaucoma & Optic Nerve Care',
-      subtitle: 'Prevent Silent Vision Loss with Laser',
-      duration: 'Laser & Medical Therapy',
-      recovery: 'Outpatient Procedure',
-      image: 'https://images.unsplash.com/photo-1583912267670-6575ad472688?auto=format&fit=crop&q=80&w=600',
-      description: 'Comprehensive intraocular pressure monitoring, computerized visual field perimetry, and Selective Laser Trabeculoplasty (SLT) to preserve lifelong optic nerve health.',
-      features: ['Humphrey Visual Field Analyzer (HFA)', 'Non-Contact Applanation Tonometry', 'Selective Laser Trabeculoplasty (SLT)', 'Minimally Invasive Glaucoma Surgery', 'Pachymetry & RNFL Scans']
+      id: 'icl',
+      icon: Sparkle,
+      title: 'ICL Phakic Lens Implants',
+      subtitle: 'For High Minus Power & Thin Corneas',
+      duration: '15 Mins Procedure',
+      recovery: 'Fast 24-Hour Healing',
+      image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=600',
+      description: 'Permanent EVO+ Visian ICL implantation behind the iris for patients with extreme myopia (up to -20D) or corneas too thin for standard LASIK laser.',
+      features: ['Ideal for High Power (-0.5D to -20D)', 'Zero Corneal Tissue Removal', '100% Reversible Implantation', 'Built-in UV Eye Protection', 'Permanent Crisp HD Vision']
     },
     {
       id: 'dryeye',
@@ -65,80 +65,25 @@ export default function Services({ onBookClick }) {
       features: ['Non-Invasive Tear Film Osmolarity', 'LipiFlow Meibomian Thermal Pulsation', 'Intense Pulsed Light (IPL) Therapy', 'Long-lasting Burning & Itch Relief', 'Tailored Screen-Work Regimen']
     },
     {
-      id: 'icl',
-      icon: Sparkle,
-      title: 'ICL Phakic Lens Implants',
-      subtitle: 'For High Minus Power & Thin Corneas',
-      duration: '15 Mins Procedure',
-      recovery: 'Fast 24-Hour Healing',
-      image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=600',
-      description: 'Permanent EVO+ Visian ICL implantation behind the iris for patients with extreme myopia (up to -20D) or corneas too thin for standard LASIK laser.',
-      features: ['Ideal for High Power (-0.5D to -20D)', 'Zero Corneal Tissue Removal', '100% Reversible Implantation', 'Built-in UV Eye Protection', 'Permanent Crisp HD Vision']
-    },
-    {
-      id: 'pediatric',
-      icon: Baby,
-      title: 'Pediatric Ophthalmology & Squint',
-      subtitle: 'Child Vision Screening & Therapy',
-      duration: 'Child-Friendly Clinic',
-      recovery: 'Non-Invasive Focus',
-      image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600',
-      description: 'Gentle, child-friendly eye examinations for lazy eye (amblyopia), congenital squint correction, pediatric cataracts, and progressive myopia control therapy.',
-      features: ['Child-Friendly Diagnostic Lounge', 'Amblyopia Vision Patching Therapy', 'Squint (Strabismus) Alignment', 'Orthokeratology Myopia Control', 'Pediatric Glasses Dispensing']
-    },
-    {
-      id: 'cornea',
-      icon: Layers,
-      title: 'Cornea Transplant & Keratoconus',
-      subtitle: 'C3R Cross-Linking & Sutureless Transplants',
-      duration: 'Specialized Suite',
-      recovery: 'Rapid Healing',
-      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=600',
-      description: 'Full-thickness and lamellar corneal transplants (DSEK/DALK), corneal collagen cross-linking (C3R) for keratoconus stabilization, and specialty scleral lenses.',
-      features: ['Corneal Cross-Linking (C3R with Riboflavin)', 'Sutureless DSEK/DMEK Transplants', 'Specialty Scleral Contact Lenses', 'Keratoconus Topography Mapping', 'Amniotic Membrane Grafting']
-    },
-    {
-      id: 'oculoplasty',
-      icon: Sparkles,
-      title: 'Oculoplasty & Aesthetic Eye Care',
-      subtitle: 'Eyelid & Tear Duct Restoration',
-      duration: 'Day Care Surgery',
-      recovery: 'Fast Healing',
-      image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=600',
-      description: 'Reconstructive and cosmetic surgical procedures for drooping eyelids (ptosis), blocked tear ducts (laser DCR), eyelid lesions, and peri-orbital rejuvenation.',
-      features: ['Cosmetic Blepharoplasty', 'Endonasal Laser DCR Tear Duct', 'Ptosis (Drooping Eyelid) Repair', 'Orbital Reconstruction', 'Botox for Blepharospasm']
-    },
-    {
-      id: 'trauma',
-      icon: HeartPulse,
-      title: '24x7 Ocular Trauma & Emergency',
-      subtitle: 'Immediate Foreign Body & Injury Care',
-      duration: '24x7 Triage Ready',
-      recovery: 'Emergency Response',
-      image: 'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&q=80&w=600',
-      description: 'Round-the-clock emergency surgical unit for ocular perforations, corneal foreign body removal, blunt chemical burns, and traumatic retinal injuries.',
-      features: ['24x7 On-Call Ophthalmic Surgeons', 'Emergency Corneal Tear Suturing', 'Chemical Burn Wash & Neutralization', 'Surgical Foreign Body Extraction', 'Dedicated Emergency Helpline']
-    },
-    {
-      id: 'checkup',
-      icon: Stethoscope,
-      title: 'Comprehensive 12-Step Vision Check',
-      subtitle: 'Full Preventative Eye Assessment',
-      duration: '45 Mins Full Protocol',
-      recovery: 'Instant Reports',
-      image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&q=80&w=600',
-      description: 'Complete ophthalmic evaluation including digital auto-refraction, slit-lamp bio-microscopy, dilated fundus inspection, corneal topography, and dry eye grading.',
-      features: ['Digital Auto-Refraction Unit', 'Dilated Retinal Inspection', 'Corneal Topography Scan', 'Computer Vision Syndrome Assessment', 'IOP & Glaucoma Triage']
+      id: 'glaucoma',
+      icon: Shield,
+      title: 'Glaucoma & Optic Nerve Care',
+      subtitle: 'Prevent Silent Vision Loss with Laser',
+      duration: 'Laser & Medical Therapy',
+      recovery: 'Outpatient Procedure',
+      image: 'https://images.unsplash.com/photo-1583912267670-6575ad472688?auto=format&fit=crop&q=80&w=600',
+      description: 'Comprehensive intraocular pressure monitoring, computerized visual field perimetry, and Selective Laser Trabeculoplasty (SLT) to preserve lifelong optic nerve health.',
+      features: ['Humphrey Visual Field Analyzer (HFA)', 'Non-Contact Applanation Tonometry', 'Selective Laser Trabeculoplasty (SLT)', 'Minimally Invasive Glaucoma Surgery', 'Pachymetry & RNFL Scans']
     }
   ];
 
   return (
-    <section id="services" className="py-24 bg-slate-50 relative overflow-hidden">
+    <section id="services" className="pt-16 pb-12 bg-slate-50 relative overflow-hidden">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
+        <div className="text-center max-w-3xl mx-auto space-y-3.5 mb-10">
           <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-teal-500/10 text-teal-700 text-xs font-black uppercase tracking-wider border border-teal-500/20">
             <Sparkles className="w-4 h-4 text-teal-600" />
             <span>Advanced Clinical Treatments</span>
@@ -148,23 +93,23 @@ export default function Services({ onBookClick }) {
             Super-Specialty Eye Care Powered by German Laser Robotics
           </h2>
 
-          <p className="text-slate-600 text-base sm:text-lg leading-relaxed font-normal">
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-normal max-w-2xl mx-auto">
             From blade-free Femto LASIK vision restoration to micro-incision sutureless cataract procedures, LipiFlow dry eye spa, and complex vitreo-retinal surgery.
           </p>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Services Grid (6 Core Balanced Cards) */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((srv) => {
             const IconComponent = srv.icon;
             return (
               <div
                 key={srv.id}
-                className="group bg-white rounded-3xl overflow-hidden border border-slate-200/90 hover:border-teal-500/60 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between transform hover:-translate-y-1"
+                className="group bg-white rounded-3xl overflow-hidden border border-slate-200/90 hover:border-teal-500/60 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between transform hover:-translate-y-1.5"
               >
                 <div>
                   {/* Card Image Header with Clean Medically-Accurate Imagery */}
-                  <div className="relative h-48 overflow-hidden bg-slate-900">
+                  <div className="relative h-52 overflow-hidden bg-slate-900">
                     <img
                       src={srv.image}
                       alt={srv.title}
@@ -187,21 +132,21 @@ export default function Services({ onBookClick }) {
                   </div>
 
                   {/* Body */}
-                  <div className="p-5 space-y-2">
-                    <h3 className="text-base font-black text-slate-900 font-heading leading-snug group-hover:text-teal-700 transition-colors">
+                  <div className="p-6 space-y-2">
+                    <h3 className="text-lg font-black text-slate-900 font-heading leading-snug group-hover:text-teal-700 transition-colors">
                       {srv.title}
                     </h3>
                     <p className="text-xs font-extrabold text-teal-600">
                       {srv.subtitle}
                     </p>
-                    <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed font-normal">
+                    <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed font-normal pt-1">
                       {srv.description}
                     </p>
                   </div>
                 </div>
 
                 {/* Footer Action */}
-                <div className="px-5 pb-5 pt-2 flex items-center justify-between border-t border-slate-100">
+                <div className="px-6 pb-6 pt-3 flex items-center justify-between border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setSelectedService(srv)}
@@ -214,7 +159,7 @@ export default function Services({ onBookClick }) {
                   <button
                     type="button"
                     onClick={onBookClick}
-                    className="px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-teal-600 text-white font-bold text-[11px] shadow transition-all"
+                    className="px-4 py-2 rounded-full bg-slate-900 hover:bg-teal-600 text-white font-bold text-xs shadow transition-all transform active:scale-95"
                   >
                     Book Now
                   </button>
@@ -223,6 +168,17 @@ export default function Services({ onBookClick }) {
               </div>
             );
           })}
+        </div>
+
+        {/* Explore All Treatments CTA */}
+        <div className="mt-14 text-center">
+          <a
+            href="/treatments"
+            className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-full bg-white hover:bg-teal-50 text-teal-800 font-black text-xs sm:text-sm border border-slate-200 hover:border-teal-400 shadow-md transition-all transform hover:scale-105"
+          >
+            <span>Explore All 12+ Eye Treatments &amp; Surgical Protocols</span>
+            <ArrowRight className="w-4 h-4 text-teal-600" />
+          </a>
         </div>
 
       </div>

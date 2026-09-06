@@ -77,7 +77,7 @@ export default function Contact() {
           </h2>
           
           <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
-            Conveniently located in the Medical Enclave with 24x7 emergency casualty response, dedicated valet parking, and optical diagnostics.
+            Conveniently located at REH Medical Tower on Agra Road, Jaipur with 24x7 emergency casualty response, dedicated valet parking, and optical diagnostics.
           </p>
         </div>
 
@@ -95,7 +95,7 @@ export default function Contact() {
                 <div>
                   <h4 className="text-base font-black text-slate-900 font-heading">Hospital Address</h4>
                   <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-1">
-                    REH Medical Tower, 45 Medical Enclave, Main Hospital Road, City Center - 110001
+                    REH Medical Tower, Oppo. 52 Feet Hanuman ji, Agra Road, Jaipur - 303012
                   </p>
                 </div>
               </div>
