@@ -41,23 +41,81 @@ export default function TechnologyPage() {
   return (
     <div className="pt-28 pb-20 bg-slate-50 min-h-screen">
       
-      {/* Header Banner */}
-      <section className="bg-gradient-to-br from-teal-950 via-slate-900 to-cyan-950 text-white py-16 sm:py-24 relative overflow-hidden border-b border-teal-500/20 shadow-xl">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(#14b8a6_1px,transparent_1px)] [background-size:20px_20px] opacity-10" />
+      {/* Professional Medical Header Banner */}
+      <section className="bg-gradient-to-r from-teal-50/80 via-white to-slate-50 border-b border-slate-200/90 py-12 sm:py-16 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-teal-200/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 space-y-5">
+              <div className="flex items-center space-x-2.5">
+                <span className="w-8 h-1 bg-teal-600 rounded-full"></span>
+                <span className="text-teal-800 font-extrabold uppercase tracking-wider text-xs sm:text-sm">
+                  German Optical &amp; Laser Robotics
+                </span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.15]">
+                Advanced Clinical <span className="text-teal-700">Technology Suite</span>
+              </h1>
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl">
+                Equipped with FDA-approved German Carl Zeiss VisuMax femtosecond lasers, Alcon EX500 excimer systems, and sterile Class-100 Modular OTs for micrometer-level surgical precision.
+              </p>
+              
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <Link
+                  to="/book-appointment"
+                  className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-teal-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all"
+                >
+                  <span>Book Tech Consultation</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  to="/treatments"
+                  className="inline-flex items-center space-x-2 px-5 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-800 font-bold text-sm border border-slate-300 shadow-sm transition-all"
+                >
+                  <span>View Treatments</span>
+                </Link>
+              </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4 text-center">
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-teal-500/20 text-teal-300 text-xs font-black uppercase tracking-wider border border-teal-400/30 backdrop-blur-md shadow-inner">
-            <Microscope className="w-3.5 h-3.5 text-teal-400 animate-pulse" />
-            <span>German Optical &amp; Laser Robotics</span>
+              {/* Quick Trust Badges */}
+              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200 max-w-lg">
+                <div className="text-center sm:text-left">
+                  <div className="text-lg sm:text-xl font-black text-slate-900">Carl Zeiss</div>
+                  <div className="text-[11px] text-slate-500 font-semibold">German Optics</div>
+                </div>
+                <div className="text-center sm:text-left">
+                  <div className="text-lg sm:text-xl font-black text-teal-700">500 kHz</div>
+                  <div className="text-[11px] text-slate-500 font-semibold">Femto Precision</div>
+                </div>
+                <div className="text-center sm:text-left">
+                  <div className="text-lg sm:text-xl font-black text-slate-900">Class-100</div>
+                  <div className="text-[11px] text-slate-500 font-semibold">Modular Sterile OTs</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Photo Column */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-md aspect-[16/10] sm:aspect-[16/11] rounded-3xl overflow-hidden shadow-2xl border-4 border-white group">
+                <img
+                  src="/images/banners/banner_technology.jpg"
+                  alt="Carl Zeiss Femtosecond Laser & 3D Surgical Suite"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  loading="eager"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent opacity-80 pointer-events-none" />
+                <div className="absolute bottom-3 left-3 right-3 px-3.5 py-2 rounded-xl bg-white/95 backdrop-blur-md border border-white/40 flex items-center justify-between text-xs shadow-md">
+                  <span className="font-bold text-slate-900 flex items-center space-x-1.5">
+                    <ShieldCheck className="w-4 h-4 text-teal-600 shrink-0" />
+                    <span>Carl Zeiss VisuMax &amp; 3D Suite</span>
+                  </span>
+                  <span className="text-teal-700 font-black text-[11px]">Sub-Micron</span>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading tracking-tight text-white">
-            Advanced Clinical <span className="bg-gradient-to-r from-teal-300 via-cyan-200 to-white bg-clip-text text-transparent">Technology Suite</span>
-          </h1>
-          <p className="text-slate-200 text-base sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed">
-            Equipped with FDA-approved German Carl Zeiss and Alcon diagnostic and surgical robotics for micrometer-level precision.
-          </p>
         </div>
       </section>
 
