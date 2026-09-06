@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from flask import Blueprint, request, jsonify
-from models import db, Doctor, Appointment
+from models import db, Doctor, Appointment, Inquiry
 from services.notification_service import send_sms_notification, send_whatsapp_auto, send_whatsapp_notification
 
 public_bp = Blueprint('public', __name__)
@@ -206,3 +206,63 @@ def create_appointment():
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'error': f'Failed to create appointment: {str(e)}'}), 500
+
+
+@public_bp.route('/inquiries', methods=['POST'])
+def create_inquiry():
+    data = request.get_json() or {}
+    name = data.get('name', '').strip()
+    phone = data.get('phone', '').strip()
+    email = data.get('email', '').strip()
+    message = data.get('message', '').strip()
+
+    if not name or not phone:
+        return jsonify({'success': False, 'error': 'Name and phone number are required.'}), 400
+
+    try:
+        new_inquiry = Inquiry(
+            name=name,
+            phone=phone,
+            email=email or None,
+            message=message or None,
+            status='new'
+        )
+        db.session.add(new_inquiry)
+        db.session.commit()
+
+        # Build notification text for hospital response
+        inq_id = f"REH-INQ-{new_inquiry.id:04d}"
+        ack_msg = (
+            f"REKHA EYE HOSPITAL (REH)\n"
+            f"Dear {name},\n\n"
+            f"Thank you for contacting Rekha Eye Hospital. Your inquiry ({inq_id}) has been recorded.\n"
+            f"Our patient counselor will call you on {phone} within 30 minutes.\n\n"
+            f"For urgent assistance, call our 24x7 helpline: +91 7733866682.\n\n"
+            f"Rekha Eye Hospital & Lasik Center"
+        )
+
+        # Dispatch background SMS / WhatsApp to patient
+        try:
+            send_sms_notification(phone, ack_msg)
+            send_whatsapp_auto(phone, ack_msg)
+        except Exception as notify_err:
+            print(f"[Inquiry Notification Error] {notify_err}")
+
+        # Create direct WhatsApp chat link pre-filled with patient inquiry details
+        import urllib.parse
+        encoded_query = urllib.parse.quote(
+            f"Hello Rekha Eye Hospital, I am {name} (Phone: {phone}). Inquiry #{inq_id}: {message or 'I would like to inquire about eye consultation.'}"
+        )
+        direct_wa_link = f"https://wa.me/917733866682?text={encoded_query}"
+
+        return jsonify({
+            'success': True,
+            'message': 'Your inquiry has been received. Our clinical counselor will contact you shortly.',
+            'inquiry': new_inquiry.to_dict(),
+            'inquiry_id': inq_id,
+            'whatsapp_chat_url': direct_wa_link
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': f'Failed to submit inquiry: {str(e)}'}), 500
+

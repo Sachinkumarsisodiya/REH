@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { 
   Eye, Zap, Shield, Sparkles, Activity, Baby, Stethoscope, 
   Layers, Check, ArrowRight, Clock, ShieldCheck, HelpCircle,
@@ -7,7 +7,19 @@ import {
 } from 'lucide-react';
 
 export default function TreatmentsPage() {
-  const [activeTab, setActiveTab] = useState('lasik');
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam || 'lasik');
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+      const el = document.getElementById('treatment-showcase');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [tabParam]);
 
   const treatments = [
     {

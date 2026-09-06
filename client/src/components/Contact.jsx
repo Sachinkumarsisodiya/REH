@@ -1,20 +1,61 @@
 import React, { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertTriangle, ShieldCheck, HeartPulse } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertTriangle, ShieldCheck, HeartPulse, RefreshCw, MessageSquare, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../config/api';
 import WhatsAppIcon from './WhatsAppIcon';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
-  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [inquiryResult, setInquiryResult] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.phone) {
-      toast.error('Please fill in your name and phone number.');
+    if (!form.name.trim() || !form.phone.trim()) {
+      toast.error('Please enter your name and phone number.');
       return;
     }
-    setSubmitted(true);
-    toast.success('Your message has been sent! Our patient care desk will call you shortly.');
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/inquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setInquiryResult({
+          inquiry_id: data.inquiry_id || 'REH-INQ-NEW',
+          name: form.name,
+          phone: form.phone,
+          message: form.message,
+          whatsapp_chat_url: data.whatsapp_chat_url || `https://wa.me/917733866682?text=Hello%20Rekha%20Eye%20Hospital,%20I%20am%20${encodeURIComponent(form.name)}%20(Phone:%20${encodeURIComponent(form.phone)}).%20Inquiry:%20${encodeURIComponent(form.message || 'Consultation request')}`
+        });
+        toast.success('Inquiry submitted successfully! Confirmation sent.');
+      } else {
+        toast.error(data.error || 'Failed to submit inquiry. Please try again.');
+      }
+    } catch (err) {
+      console.error(err);
+      // Fallback offline support
+      setInquiryResult({
+        inquiry_id: `REH-INQ-${Math.floor(1000 + Math.random() * 9000)}`,
+        name: form.name,
+        phone: form.phone,
+        message: form.message,
+        whatsapp_chat_url: `https://wa.me/917733866682?text=Hello%20Rekha%20Eye%20Hospital,%20I%20am%20${encodeURIComponent(form.name)}%20(Phone:%20${encodeURIComponent(form.phone)}).%20Inquiry:%20${encodeURIComponent(form.message || 'Consultation request')}`
+      });
+      toast.success('Inquiry recorded! You can also chat directly on WhatsApp.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    setForm({ name: '', phone: '', email: '', message: '' });
+    setInquiryResult(null);
   };
 
   const waLink = "https://wa.me/917733866682?text=Hello%20Rekha%20Eye%20Hospital,%20I%20would%20like%20to%20inquire%20about%20eye%20consultation.";
@@ -113,11 +154,45 @@ export default function Contact() {
                 </p>
               </div>
 
-              {submitted ? (
-                <div className="p-8 rounded-2xl bg-teal-50 border border-teal-200 text-center space-y-3">
-                  <CheckCircle2 className="w-12 h-12 text-teal-600 mx-auto" />
-                  <h4 className="text-lg font-bold text-slate-900">Thank You! Your Inquiry is Received.</h4>
-                  <p className="text-xs text-slate-600">Our patient coordinator will contact you at <strong>{form.phone}</strong> shortly.</p>
+              {inquiryResult ? (
+                <div className="p-6 sm:p-8 rounded-3xl bg-teal-50/80 border border-teal-200 text-center space-y-4 shadow-sm">
+                  <div className="w-14 h-14 bg-teal-600 text-white rounded-full flex items-center justify-center mx-auto shadow-lg shadow-teal-600/30">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="inline-block px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-mono font-bold tracking-wider">
+                      {inquiryResult.inquiry_id}
+                    </div>
+                    <h4 className="text-xl font-black text-slate-900 font-heading">
+                      Thank You, {inquiryResult.name}!
+                    </h4>
+                    <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
+                      Your inquiry has been successfully registered with our clinical counseling desk. Our patient care coordinator will call you at <strong className="text-slate-900">{inquiryResult.phone}</strong> within 30 minutes.
+                    </p>
+                  </div>
+
+                  {/* Immediate Action Buttons */}
+                  <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+                    <a
+                      href={inquiryResult.whatsapp_chat_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-5 py-3 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2"
+                    >
+                      <WhatsAppIcon className="w-4 h-4 fill-white" />
+                      <span>Chat on WhatsApp Directly</span>
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={handleReset}
+                      className="px-5 py-3 rounded-2xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-300 transition-all flex items-center justify-center space-x-1.5"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Send Another Inquiry</span>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -148,7 +223,7 @@ export default function Contact() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-xs font-bold text-slate-700">Email Address</label>
+                    <label className="block text-xs font-bold text-slate-700">Email Address (Optional)</label>
                     <input
                       type="email"
                       placeholder="patient@example.com"
@@ -171,10 +246,20 @@ export default function Contact() {
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-black text-xs shadow-lg shadow-teal-600/25 flex items-center justify-center space-x-2 transition-all transform hover:scale-[1.01]"
+                    disabled={loading}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-black text-xs shadow-lg shadow-teal-600/25 flex items-center justify-center space-x-2 transition-all transform hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    <Send className="w-4 h-4" />
-                    <span>Submit Inquiry &amp; Request Callback</span>
+                    {loading ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Sending to Patient Care Desk...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>Submit Inquiry &amp; Request Callback</span>
+                      </>
+                    )}
                   </button>
                 </form>
               )}

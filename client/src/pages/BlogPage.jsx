@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { 
   BookOpen, Clock, ArrowRight, ShieldAlert, Sparkles, UserCheck, 
   Stethoscope, ChevronRight, CheckCircle2, AlertTriangle, Play, 
@@ -8,7 +8,15 @@ import {
 } from 'lucide-react';
 
 export default function BlogPage() {
-  const [activeTab, setActiveTab] = useState('articles'); // 'articles' | 'tools' | 'emergency' | 'faqs'
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam || 'articles'); // 'articles' | 'tools' | 'emergency' | 'faqs'
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
   
   // 20-20-20 Timer State
   const [secondsLeft, setSecondsLeft] = useState(20 * 60); // 20 mins

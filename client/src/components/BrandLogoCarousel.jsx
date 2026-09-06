@@ -6,7 +6,31 @@ import {
 
 export default function BrandLogoCarousel() {
   const [selectedItem, setSelectedItem] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
   const scrollRef = useRef(null);
+
+  // Self-running continuous auto-scroll loop
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let animationFrameId;
+    const speed = 0.75; // pixels per tick
+
+    const step = () => {
+      if (!isHovered && el) {
+        if (el.scrollLeft >= el.scrollWidth / 2) {
+          el.scrollLeft = 0;
+        } else {
+          el.scrollLeft += speed;
+        }
+      }
+      animationFrameId = requestAnimationFrame(step);
+    };
+
+    animationFrameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isHovered]);
 
   const brandItems = [
     {
@@ -229,9 +253,13 @@ export default function BrandLogoCarousel() {
           {/* Scrolling Track */}
           <div
             ref={scrollRef}
-            className="flex items-center space-x-4 overflow-x-auto scrollbar-none py-2 px-2"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setIsHovered(false)}
+            className="flex items-center space-x-4 overflow-x-auto scrollbar-none py-2 px-2 select-none"
             style={{
-              scrollBehavior: 'smooth'
+              scrollBehavior: 'auto'
             }}
           >
             {marqueeItems.map((item, index) => (

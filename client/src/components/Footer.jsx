@@ -81,20 +81,36 @@ export default function Footer({ onBookClick }) {
               <li><Link to="/doctors" className="hover:text-teal-400 transition-colors">Surgeon Directory</Link></li>
               <li><Link to="/technology" className="hover:text-teal-400 transition-colors">Carl Zeiss Laser Tech</Link></li>
               <li><Link to="/patient-guide" className="hover:text-teal-400 transition-colors">Cashless TPA &amp; Insurance</Link></li>
+              <li><Link to="/gallery" className="hover:text-teal-400 transition-colors">Hospital Campus &amp; OT Tour</Link></li>
               <li><Link to="/eye-health" className="hover:text-teal-400 transition-colors">Eye Health Knowledge Hub</Link></li>
+              <li><Link to="/contact" className="hover:text-teal-400 transition-colors">Contact &amp; Casualty Desk</Link></li>
             </ul>
           </div>
 
-          {/* Eye Treatments */}
+          {/* Eye Treatments Deep Links */}
           <div className="space-y-3">
-            <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading">Laser &amp; Surgery</h4>
+            <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading">Laser &amp; Surgeries</h4>
             <ul className="space-y-2 text-xs font-medium">
-              <li><Link to="/treatments" className="hover:text-teal-400 transition-colors">Blade-Free Femto LASIK</Link></li>
-              <li><Link to="/treatments" className="hover:text-teal-400 transition-colors">Custom Contoura Vision</Link></li>
-              <li><Link to="/treatments" className="hover:text-teal-400 transition-colors">Micro-Incision Cataract (MICS)</Link></li>
-              <li><Link to="/treatments" className="hover:text-teal-400 transition-colors">Diabetic Vitreo-Retinopathy</Link></li>
-              <li><Link to="/treatments" className="hover:text-teal-400 transition-colors">Selective Laser Trabeculoplasty</Link></li>
-              <li><Link to="/treatments" className="hover:text-teal-400 transition-colors">Pediatric Squint &amp; Lazy Eye</Link></li>
+              <li><Link to="/treatments?tab=lasik" className="hover:text-teal-400 transition-colors">Blade-Free Femto LASIK</Link></li>
+              <li><Link to="/treatments?tab=cataract" className="hover:text-teal-400 transition-colors">Micro-Incision Cataract (MICS)</Link></li>
+              <li><Link to="/treatments?tab=icl" className="hover:text-teal-400 transition-colors">EVO+ ICL Lens Implants</Link></li>
+              <li><Link to="/treatments?tab=retina" className="hover:text-teal-400 transition-colors">Diabetic Vitreo-Retinopathy</Link></li>
+              <li><Link to="/treatments?tab=dryeye" className="hover:text-teal-400 transition-colors">Dry Eye Spa &amp; LipiFlow</Link></li>
+              <li><Link to="/treatments?tab=glaucoma" className="hover:text-teal-400 transition-colors">Selective Laser Trabeculoplasty</Link></li>
+              <li><Link to="/treatments?tab=pediatric" className="hover:text-teal-400 transition-colors">Pediatric Squint &amp; Lazy Eye</Link></li>
+            </ul>
+          </div>
+
+          {/* Interactive Tools & First Aid */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading">Clinical Tools &amp; Help</h4>
+            <ul className="space-y-2 text-xs font-medium">
+              <li><Link to="/eye-health?tab=tools" className="hover:text-teal-400 transition-colors">20-20-20 Eye Strain Timer</Link></li>
+              <li><Link to="/eye-health?tab=tools" className="hover:text-teal-400 transition-colors">LASIK Eligibility Checker</Link></li>
+              <li><Link to="/eye-health?tab=emergency" className="hover:text-rose-400 transition-colors">Ocular Emergency First-Aid</Link></li>
+              <li><Link to="/eye-health?tab=faqs" className="hover:text-teal-400 transition-colors">Patient FAQs &amp; Insurance</Link></li>
+              <li><Link to="/patient-guide" className="hover:text-teal-400 transition-colors">Empanelled TPAs List</Link></li>
+              <li><Link to="/book-appointment" className="hover:text-teal-400 transition-colors font-bold text-teal-300">Live Doctor Slot Booking</Link></li>
             </ul>
           </div>
 
@@ -104,7 +120,7 @@ export default function Footer({ onBookClick }) {
             <div className="space-y-2.5 text-xs">
               <a href="tel:+917733866682" className="flex items-center space-x-2 text-rose-400 font-bold hover:text-rose-300 transition-colors">
                 <Phone className="w-4 h-4 animate-pulse shrink-0" />
-                <span>24/7 Helpline: +91 7733866682</span>
+                <span>Casualty: +91 7733866682</span>
               </a>
 
               <a href="https://wa.me/917733866682" target="_blank" rel="noreferrer" className="flex items-center space-x-2 text-[#25D366] font-semibold hover:text-[#20ba5a] transition-colors">
@@ -112,8 +128,13 @@ export default function Footer({ onBookClick }) {
                 <span>WhatsApp: +91 7733866682</span>
               </a>
 
-              <p className="text-slate-400 text-[11px]">OPD Hours: Mon - Sat (8:30 AM - 7:30 PM)</p>
-              <p className="text-slate-400 text-[11px]">Sunday: Emergency OPD (9:00 AM - 1:00 PM)</p>
+              <a href="mailto:info@rekhaeyehospital.com" className="flex items-center space-x-2 text-slate-400 hover:text-white transition-colors">
+                <Mail className="w-4 h-4 shrink-0 text-teal-400" />
+                <span>info@rekhaeyehospital.com</span>
+              </a>
+
+              <p className="text-slate-400 text-[11px]">OPD: Mon - Sat (8:30 AM - 7:30 PM)</p>
+              <p className="text-slate-400 text-[11px]">Casualty: 24 Hours Open (7 Days)</p>
               
               <div className="pt-2">
                 <Link
@@ -131,12 +152,16 @@ export default function Footer({ onBookClick }) {
         {/* Bottom Bar with Discrete Staff Portal Link */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 space-y-4 sm:space-y-0">
           <div>
-            &copy; {new Date().getFullYear()} Rekha Eye Hospital (REH). All rights reserved. Medical Class Standards.
+            &copy; {new Date().getFullYear()} Rekha Eye Hospital (REH). All rights reserved. NABH Standards.
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link to="/admin" className="text-slate-600 hover:text-teal-400 transition-colors font-medium">
+            <Link to="/admin" className="text-slate-500 hover:text-teal-400 transition-colors font-medium">
               Hospital Staff Portal
+            </Link>
+            <span>&bull;</span>
+            <Link to="/patient-guide" className="text-slate-500 hover:text-teal-400 transition-colors">
+              Patient Rights
             </Link>
             <span>&bull;</span>
             <button

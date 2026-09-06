@@ -126,3 +126,31 @@ class AppointmentHistory(db.Model):
             'changed_at': self.changed_at.isoformat() if self.changed_at else None,
             'notes': self.notes or ''
         }
+
+
+class Inquiry(db.Model):
+    __tablename__ = 'inquiries'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(120), nullable=True)
+    message = db.Column(db.Text, nullable=True)
+    status = db.Column(db.String(20), nullable=False, default='new') # new, contacted, resolved
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __init__(self, **kwargs):
+        super(Inquiry, self).__init__(**kwargs)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'inquiry_id': f"REH-INQ-{self.id:04d}",
+            'name': self.name,
+            'phone': self.phone,
+            'email': self.email or '',
+            'message': self.message or '',
+            'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
