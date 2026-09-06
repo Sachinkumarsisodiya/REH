@@ -1,8 +1,9 @@
 FROM node:20-slim
 
-# Install Chromium and all required system dependencies for Puppeteer
+# Install Chromium and all required system dependencies for Puppeteer headless
 RUN apt-get update && apt-get install -y \
     chromium \
+    fonts-freefont-ttf \
     fonts-liberation \
     libasound2 \
     libatk-bridge2.0-0 \
@@ -33,11 +34,12 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     libxss1 \
     libxtst6 \
+    ca-certificates \
+    procps \
     wget \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Tell Puppeteer to use the system-installed Chromium instead of downloading its own
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 

@@ -2,24 +2,61 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
 
+// ─────────────────────────────────────────────
+//  Clean up stale Chromium Singleton locks (Fixes Railway/Docker restart crash)
+// ─────────────────────────────────────────────
+function cleanupSingletonLocks(dirPath) {
+    try {
+        if (!fs.existsSync(dirPath)) return;
+        const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = path.join(dirPath, entry.name);
+            if (entry.isDirectory()) {
+                cleanupSingletonLocks(fullPath);
+            } else if (
+                entry.name.startsWith('Singleton') ||
+                entry.name === 'SingletonLock' ||
+                entry.name === 'SingletonCookie' ||
+                entry.name === 'SingletonSocket'
+            ) {
+                try {
+                    console.log(`[CLEANUP] Removing stale lock file: ${fullPath}`);
+                    fs.unlinkSync(fullPath);
+                } catch (e) {
+                    console.warn(`[CLEANUP] Could not remove lock file ${fullPath}:`, e.message);
+                }
+            }
+        }
+    } catch (err) {
+        console.warn('[CLEANUP] Lock cleanup warning:', err.message);
+    }
+}
+
+const authDataPath = path.join(__dirname, '.wwebjs_auth');
+cleanupSingletonLocks(authDataPath);
+
 // Current QR string (refreshes automatically)
 let currentQR = null;
 let isReady = false;
 
 // ─────────────────────────────────────────────
-//  WhatsApp Client
+//  WhatsApp Client with Container-Safe Puppeteer Configuration
 // ─────────────────────────────────────────────
+const puppeteerExecutablePath = process.env.PUPPETEER_EXECUTABLE_PATH || (process.platform === 'linux' ? '/usr/bin/chromium' : undefined);
+
 const client = new Client({
-    authStrategy: new LocalAuth({ dataPath: './.wwebjs_auth' }),
+    authStrategy: new LocalAuth({ dataPath: authDataPath }),
     puppeteer: {
         headless: true,
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        executablePath: puppeteerExecutablePath,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -27,8 +64,10 @@ const client = new Client({
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--single-process',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--headless=new',
+            '--disable-software-rasterizer',
+            '--disable-extensions'
         ]
     }
 });
@@ -36,9 +75,8 @@ const client = new Client({
 client.on('qr', (qr) => {
     currentQR = qr;
     isReady = false;
-    // Also print in terminal (small, for reference)
     console.log('\n[QR] Naya QR generate hua!');
-    console.log('[QR] Browser mein kholo: http://localhost:3001/qr');
+    console.log('[QR] Browser mein kholo: /qr');
     console.log('[QR] Wahan se apne phone se scan karo.\n');
     qrcode.generate(qr, { small: true });
 });
@@ -58,7 +96,7 @@ client.on('ready', () => {
     currentQR = null;
     console.log('\n╔══════════════════════════════════════════════╗');
     console.log('║  ✅ WhatsApp READY — Auto-send active!        ║');
-    console.log('║  Port 3001 pe API ready hai.                  ║');
+    console.log('║  Port pe API ready hai.                       ║');
     console.log('╚══════════════════════════════════════════════╝\n');
 });
 
@@ -68,7 +106,9 @@ client.on('disconnected', (reason) => {
 });
 
 console.log('\n🚀 WhatsApp Service start ho rahi hai...\n');
-client.initialize();
+client.initialize().catch(err => {
+    console.error('❌ Failed to initialize WhatsApp client:', err);
+});
 
 // ─────────────────────────────────────────────
 //  QR Code Webpage — Browser se scan karo
@@ -187,7 +227,6 @@ app.get('/qr', async (req, res) => {
                 <div class="timer">QR 30 sec mein expire hoga — page auto-refresh hoga</div>
             </div>
             <script>
-                // Auto-refresh every 30 seconds for fresh QR
                 setTimeout(() => location.reload(), 30000);
             </script>
         </body>
@@ -218,7 +257,7 @@ app.post('/send-message', async (req, res) => {
     if (!isReady) {
         return res.status(503).json({
             success: false,
-            error: 'WhatsApp ready nahi hai. http://localhost:3001/qr pe QR scan karo.'
+            error: 'WhatsApp ready nahi hai. /qr pe QR scan karo.'
         });
     }
 
@@ -243,6 +282,6 @@ app.post('/send-message', async (req, res) => {
 //  Start Server
 // ─────────────────────────────────────────────
 app.listen(PORT, () => {
-    console.log(`\n📡 API server: http://localhost:${PORT}`);
-    console.log(`📱 QR Scanner: http://localhost:${PORT}/qr  ← Is link ko browser mein kholo!\n`);
+    console.log(`\n📡 API server listening on port ${PORT}`);
+    console.log(`📱 QR Scanner: /qr\n`);
 });
