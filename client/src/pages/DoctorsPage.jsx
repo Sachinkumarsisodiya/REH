@@ -123,6 +123,8 @@ export default function DoctorsPage() {
                   alt="REH Medical Faculty & Eye Surgeons"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent opacity-80 pointer-events-none" />
                 <div className="absolute bottom-3 left-3 right-3 px-3.5 py-2 rounded-xl bg-white/95 backdrop-blur-md border border-white/40 flex items-center justify-between text-xs shadow-md">
@@ -184,14 +186,16 @@ export default function DoctorsPage() {
                 className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-md hover:shadow-xl transition-all flex flex-col justify-between group"
               >
                 <div>
-                  <div className="relative h-64 overflow-hidden bg-slate-100">
+                  <div className="relative h-80 xs:h-96 sm:h-80 lg:h-64 overflow-hidden bg-slate-100">
                     <img
                       src={doc.photo_url || fallbackImg}
                       alt={doc.name}
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         e.target.src = fallbackImg;
                       }}
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover object-[center_10%] group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
                     

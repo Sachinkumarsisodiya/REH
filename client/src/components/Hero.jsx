@@ -102,6 +102,9 @@ export default function Hero({ onBookClick }) {
               <img
                 src="/dr-rekha-sisodiya.jpg"
                 alt="Dr. Rekha Sisodiya - Founder, Medical Director & Chief Ophthalmic Surgeon at Rekha Eye Hospital"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-[490px] object-cover object-top group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />

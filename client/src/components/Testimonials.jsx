@@ -74,6 +74,8 @@ export default function Testimonials() {
               <img
                 src={curr.photo}
                 alt={curr.name}
+                loading="lazy"
+                decoding="async"
                 className="w-14 h-14 rounded-full object-cover border-2 border-teal-500"
               />
               <div>

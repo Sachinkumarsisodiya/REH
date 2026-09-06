@@ -63,6 +63,8 @@ export default function Blog() {
             <img
               src="/dr-rekha-sisodiya.jpg"
               alt="Dr. Rekha Sisodiya - Medical Director"
+              loading="lazy"
+              decoding="async"
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-top border-2 border-white shadow-lg bg-slate-100"
             />
             <div className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded bg-teal-600 text-white text-[9px] font-black uppercase shadow">
@@ -96,6 +98,8 @@ export default function Blog() {
                   <img
                     src={art.image}
                     alt={art.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />

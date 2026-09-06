@@ -175,14 +175,16 @@ export default function Doctors({ doctors: propDoctors, onSelectDoctorForBooking
                 >
                   <div>
                     {/* Photo Container */}
-                    <div className="relative h-64 overflow-hidden bg-slate-100">
+                    <div className="relative h-80 xs:h-96 sm:h-80 lg:h-64 overflow-hidden bg-slate-100">
                       <img
                         src={doc.photo_url}
                         alt={doc.name}
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           e.target.src = doctorFallbacks[idx % doctorFallbacks.length];
                         }}
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover object-[center_10%] group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />
                       

@@ -532,6 +532,8 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                           <img
                             src={doc.photo_url || fallbackImg}
                             alt={doc.name}
+                            loading="lazy"
+                            decoding="async"
                             onError={(e) => {
                               e.target.onerror = null;
                               e.target.src = fallbackImg;
@@ -606,6 +608,8 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                     <img
                       src={selectedDoctor.photo_url || doctorFallbacks[0]}
                       alt={selectedDoctor.name}
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         e.target.src = doctorFallbacks[0];
                       }}

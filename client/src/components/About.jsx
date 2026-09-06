@@ -21,6 +21,8 @@ export default function About() {
                 <img
                   src="/dr-rekha-sisodiya.jpg"
                   alt="Dr. Rekha Sisodiya - Founder & Chief Surgeon at Rekha Eye Hospital"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-64 sm:h-80 object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute bottom-3 left-3 right-3 bg-slate-950/85 backdrop-blur-md p-3 rounded-2xl text-white border border-slate-700/60 shadow-lg">
@@ -55,6 +57,8 @@ export default function About() {
                 <img
                   src="https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=600"
                   alt="Micro-Surgical Operation Suite at Rekha Eye Hospital"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-48 sm:h-60 object-cover object-center group-hover:scale-105 transition-transform duration-500 opacity-90"
                 />
               </div>

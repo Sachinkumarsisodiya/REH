@@ -275,6 +275,8 @@ export default function DoctorManager({ token }) {
                     <img 
                       src={doc.photo_url} 
                       alt={doc.name} 
+                      loading="lazy"
+                      decoding="async"
                       className={`w-full h-44 object-cover object-top transition-all duration-300 ${
                         isActive ? '' : 'filter grayscale contrast-125'
                       }`}

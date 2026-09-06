@@ -325,6 +325,8 @@ export default function BlogPage() {
                   alt="Doctor-Approved Eye Health & Diagnostics"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent opacity-80 pointer-events-none" />
                 <div className="absolute bottom-3 left-3 right-3 px-3.5 py-2 rounded-xl bg-white/95 backdrop-blur-md border border-white/40 flex items-center justify-between text-xs shadow-md">
@@ -397,6 +399,8 @@ export default function BlogPage() {
               <img
                 src="/dr-rekha-sisodiya.jpg"
                 alt="Dr. Rekha Sisodiya"
+                loading="lazy"
+                decoding="async"
                 className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover object-top border-4 border-teal-500 shadow-2xl"
               />
               <span className="absolute -bottom-2.5 -right-2 px-3 py-0.5 rounded-full bg-teal-500 text-slate-950 text-[10px] font-black uppercase">
@@ -428,6 +432,8 @@ export default function BlogPage() {
                     <img
                       src={art.image}
                       alt={art.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent" />
