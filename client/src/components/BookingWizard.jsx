@@ -3,10 +3,11 @@ import {
   Calendar as CalendarIcon, Clock, User, Phone, Mail, FileText, CheckCircle2, 
   AlertCircle, Loader2, ArrowRight, ArrowLeft, MessageSquare, Sparkles, 
   Smartphone, Send, Search, Stethoscope, Check, ShieldCheck, ChevronLeft, 
-  ChevronRight, Sun, Sunset, Moon, HeartPulse, Award, MapPin
+  ChevronRight, Sun, Sunset, Moon, HeartPulse, Award, MapPin, Zap
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../config/api';
+import WhatsAppIcon from './WhatsAppIcon';
 
 const DEFAULT_DOCTORS = [
   {
@@ -143,6 +144,28 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
     }
   }, [selectedDoctorId]);
 
+  // Real-time client-side slot cutoff helper (15 mins advance cutoff)
+  const isSlotCutoff = (slotTime, selectedDate) => {
+    try {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+      const currentDay = String(now.getDate()).padStart(2, '0');
+      const todayFormatted = `${currentYear}-${currentMonth}-${currentDay}`;
+
+      if (selectedDate < todayFormatted) return true;
+      if (selectedDate > todayFormatted) return false;
+
+      // For today: check if current time is within 15 minutes of slot or past slot
+      const [h, m] = slotTime.split(':').map(Number);
+      const slotDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
+      const cutoffTime = new Date(slotDate.getTime() - 15 * 60 * 1000);
+      return now >= cutoffTime;
+    } catch {
+      return false;
+    }
+  };
+
   // Fetch Available Slots for Selected Doctor and Date
   useEffect(() => {
     if (formData.doctor_id && formData.appointment_date) {
@@ -152,7 +175,7 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
         .then(data => {
           if (data.success) {
             setIsWorkingDay(data.is_working_day);
-            const slots = data.all_slots && data.all_slots.length > 0 ? data.all_slots : [
+            const rawSlots = data.all_slots && data.all_slots.length > 0 ? data.all_slots : [
               { time: '09:30', is_available: true },
               { time: '10:00', is_available: true },
               { time: '10:30', is_available: true },
@@ -164,8 +187,19 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
               { time: '15:30', is_available: true },
               { time: '16:00', is_available: true }
             ];
-            setAvailableSlots(slots);
-            const freeSlots = slots.filter(s => s.is_available);
+
+            // Re-verify slot availability with real-time cutoff
+            const computedSlots = rawSlots.map(s => {
+              const expired = isSlotCutoff(s.time, formData.appointment_date);
+              return {
+                ...s,
+                is_available: s.is_available && !expired,
+                is_expired: expired || s.is_expired
+              };
+            });
+
+            setAvailableSlots(computedSlots);
+            const freeSlots = computedSlots.filter(s => s.is_available);
             if (freeSlots.length > 0 && !freeSlots.some(s => s.time === formData.appointment_time)) {
               setFormData(prev => ({ ...prev, appointment_time: freeSlots[0].time }));
             }
@@ -648,6 +682,20 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                 </div>
               </div>
 
+              {/* Live Booking Notice Banner */}
+              <div className="p-3.5 rounded-2xl bg-teal-50 border border-teal-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shadow-sm">
+                <div className="flex items-center space-x-2 text-teal-900 font-bold">
+                  <span className="relative flex h-2.5 w-2.5 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </span>
+                  <span>Live Dynamic Slot Engine Active</span>
+                </div>
+                <div className="text-teal-700 text-[11px] font-medium">
+                  Slots automatically close 15 minutes before the start time.
+                </div>
+              </div>
+
               {/* Time Slots Selection Categorized */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -675,24 +723,33 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                           <Sun className="w-4 h-4 text-amber-500" />
                           <span>Morning Session (09:00 - 12:00)</span>
                         </div>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
-                          {morningSlots.map((slotObj, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              disabled={!slotObj.is_available}
-                              onClick={() => setFormData({ ...formData, appointment_time: slotObj.time })}
-                              className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border ${
-                                !slotObj.is_available
-                                  ? 'bg-slate-100 border-slate-200 text-slate-400 line-through cursor-not-allowed'
-                                  : formData.appointment_time === slotObj.time
-                                  ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105'
-                                  : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-slate-50 shadow-sm'
-                              }`}
-                            >
-                              {slotObj.time}
-                            </button>
-                          ))}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+                          {morningSlots.map((slotObj, idx) => {
+                            const isSelected = formData.appointment_time === slotObj.time;
+                            const isClosed = !slotObj.is_available;
+                            return (
+                              <button
+                                key={idx}
+                                type="button"
+                                disabled={isClosed}
+                                onClick={() => setFormData({ ...formData, appointment_time: slotObj.time })}
+                                className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border flex flex-col items-center justify-center ${
+                                  isClosed
+                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60'
+                                    : isSelected
+                                    ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105'
+                                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-slate-50 shadow-sm'
+                                }`}
+                              >
+                                <span className={isClosed ? 'line-through' : ''}>{slotObj.time}</span>
+                                {isClosed && (
+                                  <span className="text-[9px] font-semibold text-slate-400 no-underline">
+                                    {slotObj.is_expired ? 'Closed' : 'Booked'}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -704,24 +761,33 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                           <Sunset className="w-4 h-4 text-orange-500" />
                           <span>Afternoon Session (12:00 - 16:00)</span>
                         </div>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
-                          {afternoonSlots.map((slotObj, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              disabled={!slotObj.is_available}
-                              onClick={() => setFormData({ ...formData, appointment_time: slotObj.time })}
-                              className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border ${
-                                !slotObj.is_available
-                                  ? 'bg-slate-100 border-slate-200 text-slate-400 line-through cursor-not-allowed'
-                                  : formData.appointment_time === slotObj.time
-                                  ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105'
-                                  : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-slate-50 shadow-sm'
-                              }`}
-                            >
-                              {slotObj.time}
-                            </button>
-                          ))}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+                          {afternoonSlots.map((slotObj, idx) => {
+                            const isSelected = formData.appointment_time === slotObj.time;
+                            const isClosed = !slotObj.is_available;
+                            return (
+                              <button
+                                key={idx}
+                                type="button"
+                                disabled={isClosed}
+                                onClick={() => setFormData({ ...formData, appointment_time: slotObj.time })}
+                                className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border flex flex-col items-center justify-center ${
+                                  isClosed
+                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60'
+                                    : isSelected
+                                    ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105'
+                                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-slate-50 shadow-sm'
+                                }`}
+                              >
+                                <span className={isClosed ? 'line-through' : ''}>{slotObj.time}</span>
+                                {isClosed && (
+                                  <span className="text-[9px] font-semibold text-slate-400 no-underline">
+                                    {slotObj.is_expired ? 'Closed' : 'Booked'}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -733,24 +799,33 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                           <Moon className="w-4 h-4 text-indigo-500" />
                           <span>Evening Session (16:00 - 18:00)</span>
                         </div>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
-                          {eveningSlots.map((slotObj, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              disabled={!slotObj.is_available}
-                              onClick={() => setFormData({ ...formData, appointment_time: slotObj.time })}
-                              className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border ${
-                                !slotObj.is_available
-                                  ? 'bg-slate-100 border-slate-200 text-slate-400 line-through cursor-not-allowed'
-                                  : formData.appointment_time === slotObj.time
-                                  ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105'
-                                  : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-slate-50 shadow-sm'
-                              }`}
-                            >
-                              {slotObj.time}
-                            </button>
-                          ))}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+                          {eveningSlots.map((slotObj, idx) => {
+                            const isSelected = formData.appointment_time === slotObj.time;
+                            const isClosed = !slotObj.is_available;
+                            return (
+                              <button
+                                key={idx}
+                                type="button"
+                                disabled={isClosed}
+                                onClick={() => setFormData({ ...formData, appointment_time: slotObj.time })}
+                                className={`py-2.5 px-2 rounded-2xl text-xs sm:text-sm font-bold transition-all border flex flex-col items-center justify-center ${
+                                  isClosed
+                                    ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60'
+                                    : isSelected
+                                    ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-500/25 scale-105'
+                                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-500 hover:bg-slate-50 shadow-sm'
+                                }`}
+                              >
+                                <span className={isClosed ? 'line-through' : ''}>{slotObj.time}</span>
+                                {isClosed && (
+                                  <span className="text-[9px] font-semibold text-slate-400 no-underline">
+                                    {slotObj.is_expired ? 'Closed' : 'Booked'}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -961,9 +1036,9 @@ export default function BookingWizard({ doctors: propDoctors = [], selectedDocto
                   href={waUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/25 flex items-center justify-center space-x-2 transition-all transform hover:scale-105"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs sm:text-sm shadow-lg shadow-[#25D366]/30 flex items-center justify-center space-x-2.5 transition-all transform hover:scale-105 active:scale-95"
                 >
-                  <MessageSquare className="w-4 h-4" />
+                  <WhatsAppIcon className="w-4 h-4 fill-white" />
                   <span>Open WhatsApp Hospital Desk</span>
                 </a>
 

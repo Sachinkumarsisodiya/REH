@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
   Users, Calendar, Clock, CheckCircle2, XCircle, AlertCircle, RefreshCw,
-  Search, Filter, LogOut, ShieldCheck, Stethoscope, ChevronRight, MessageSquare,
+  Search, Filter, LogOut, ShieldCheck, Stethoscope, ChevronRight,
   History, Activity, Bell, ExternalLink, BarChart3, Plus, Smartphone, Send,
-  UserCheck, AlertTriangle, Sparkles, Check, Phone, Mail, FileText, ArrowUpRight
+  UserCheck, AlertTriangle, Sparkles, Check, Phone, Mail, FileText, ArrowUpRight,
+  Menu, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../config/api';
+import WhatsAppIcon from '../components/WhatsAppIcon';
 import RescheduleModal from './RescheduleModal';
 import HistoryModal from './HistoryModal';
 import DoctorManager from './DoctorManager';
@@ -17,6 +19,7 @@ export default function AdminDashboard({ token, user, onLogout }) {
   const [stats, setStats] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
@@ -104,12 +107,12 @@ export default function AdminDashboard({ token, user, onLogout }) {
         
         // Custom Toast Notification showing Automated SMS & WhatsApp dispatch
         toast.custom((t) => (
-          <div className="bg-slate-900 border border-emerald-500 text-white p-4 rounded-3xl shadow-2xl shadow-emerald-950 flex items-start space-x-3 max-w-md animate-bounce-short">
-            <div className="p-2 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shrink-0">
+          <div className="bg-slate-900 border border-[#25D366] text-white p-4 rounded-3xl shadow-2xl shadow-emerald-950 flex items-start space-x-3 max-w-md animate-bounce-short">
+            <div className="p-2 rounded-2xl bg-[#25D366]/20 border border-[#25D366]/40 text-[#25D366] shrink-0">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div className="space-y-1.5 flex-1">
-              <div className="font-bold text-xs text-emerald-400 flex items-center justify-between">
+              <div className="font-bold text-xs text-[#25D366] flex items-center justify-between">
                 <span>⚡ Appointment Approved &amp; WhatsApp Sent</span>
                 <span className="text-[10px] text-slate-400 font-mono">#{app.id}</span>
               </div>
@@ -122,10 +125,10 @@ export default function AdminDashboard({ token, user, onLogout }) {
                     href={data.whatsapp_link}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow transition-all"
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-[11px] font-bold shadow transition-all"
                     onClick={() => toast.dismiss(t.id)}
                   >
-                    <MessageSquare className="w-3.5 h-3.5" />
+                    <WhatsAppIcon className="w-3.5 h-3.5 fill-white" />
                     <span>Open Patient WhatsApp Chat</span>
                   </a>
                 </div>
@@ -151,8 +154,87 @@ export default function AdminDashboard({ token, user, onLogout }) {
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col md:flex-row font-sans selection:bg-teal-500 selection:text-white">
       
-      {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-slate-900/90 backdrop-blur-xl border-b md:border-b-0 md:border-r border-slate-800/80 p-6 flex flex-col justify-between shrink-0">
+      {/* Mobile Top Navigation Header */}
+      <div className="md:hidden bg-slate-900 border-b border-slate-800 px-4 py-3.5 flex items-center justify-between sticky top-0 z-40">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-8 h-8 rounded-xl bg-slate-950 p-1 flex items-center justify-center border border-teal-500/40">
+            <img src="/favicon.svg" alt="REH" className="w-full h-full object-contain" />
+          </div>
+          <div>
+            <div className="font-black text-sm text-white font-heading">REH Command</div>
+            <div className="text-[9px] font-bold uppercase tracking-wider text-teal-400">Admin Desk</div>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          {stats?.pending_count > 0 && (
+            <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-extrabold">
+              {stats.pending_count} Pending
+            </span>
+          )}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white"
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-slate-900/98 border-b border-slate-800 p-4 space-y-3 animate-fadeIn sticky top-14 z-30 shadow-2xl">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => { setActiveTab('appointments'); setMobileMenuOpen(false); }}
+              className={`p-3 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 transition-all ${
+                activeTab === 'appointments'
+                  ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-600/30'
+                  : 'bg-slate-950 text-slate-300 border border-slate-800'
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Appointments</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('doctors'); setMobileMenuOpen(false); }}
+              className={`p-3 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 transition-all ${
+                activeTab === 'doctors'
+                  ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-600/30'
+                  : 'bg-slate-950 text-slate-300 border border-slate-800'
+              }`}
+            >
+              <Stethoscope className="w-4 h-4" />
+              <span>Surgeons</span>
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
+            <a
+              href="/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs text-teal-400 font-bold flex items-center space-x-1 hover:underline"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>View Public Portal</span>
+            </a>
+
+            <button
+              onClick={onLogout}
+              className="px-3 py-1.5 rounded-xl bg-red-950/60 border border-red-800/60 text-red-300 text-xs font-bold flex items-center space-x-1"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex md:w-64 bg-slate-900/90 backdrop-blur-xl border-r border-slate-800/80 p-6 flex-col justify-between shrink-0 min-h-screen">
         <div className="space-y-8">
           
           {/* Brand */}
@@ -231,36 +313,36 @@ export default function AdminDashboard({ token, user, onLogout }) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-5 sm:p-8 lg:p-10 space-y-8 overflow-x-hidden">
+      <main className="flex-1 p-3.5 sm:p-6 lg:p-10 space-y-6 lg:space-y-8 overflow-x-hidden">
         
         {/* Top Bar Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4 sm:pb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black font-heading text-white tracking-tight flex items-center space-x-3">
-              <span>Hospital Operations &amp; Scheduling Desk</span>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black font-heading text-white tracking-tight">
+              Hospital Scheduling Desk
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
-              Administrator: <span className="text-teal-400 font-bold">{user?.username || 'admin'}</span> &bull; Automated WhatsApp &amp; SMS Dispatch Active
+            <p className="text-xs text-slate-400 mt-0.5">
+              Admin: <span className="text-teal-400 font-bold">{user?.username || 'admin'}</span> &bull; Auto WhatsApp &amp; SMS Active
             </p>
           </div>
 
-          <div className="flex items-center flex-wrap gap-2.5">
+          <div className="flex items-center flex-wrap gap-2">
             {/* Live WhatsApp Bot Status Indicator */}
-            <div className="px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center space-x-2 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
+            <div className="px-3 py-1 rounded-full bg-emerald-950/60 border border-[#25D366]/40 text-[#25D366] text-xs font-bold flex items-center space-x-1.5 shadow-sm">
+              <WhatsAppIcon className="w-3.5 h-3.5 fill-[#25D366]" />
               <span>WhatsApp Bot: Ready</span>
             </div>
 
             {upcoming24hCount > 0 && (
-              <div className="px-3.5 py-1.5 rounded-full bg-amber-950/60 border border-amber-800 text-amber-300 text-xs font-bold flex items-center space-x-2 animate-pulse">
+              <div className="px-3 py-1 rounded-full bg-amber-950/60 border border-amber-800 text-amber-300 text-xs font-bold flex items-center space-x-1.5 animate-pulse">
                 <Bell className="w-3.5 h-3.5 text-amber-400" />
-                <span>{upcoming24hCount} Patient(s) within 24h</span>
+                <span>{upcoming24hCount} in &lt;24h</span>
               </div>
             )}
 
             <button
               onClick={() => { fetchStats(); fetchAppointments(); toast.success('Dashboard refreshed!'); }}
-              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+              className="p-1.5 sm:p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
               title="Refresh Data"
             >
               <RefreshCw className="w-4 h-4" />
@@ -271,99 +353,56 @@ export default function AdminDashboard({ token, user, onLogout }) {
         {activeTab === 'doctors' ? (
           <DoctorManager token={token} />
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-6 lg:space-y-8">
             
-            {/* Stat Cards Overview */}
+            {/* Stat Cards Overview (Responsive 2x2 on mobile, 4-col on desktop) */}
             {stats && (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 
-                <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-5 rounded-3xl border border-slate-800/80 shadow-lg relative overflow-hidden group hover:border-teal-500/40 transition-all">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/10 rounded-full blur-xl pointer-events-none" />
-                  <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
-                    <span>Today's Appts</span>
-                    <Calendar className="w-4 h-4 text-teal-400" />
+                <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-4 sm:p-5 rounded-3xl border border-slate-800/80 shadow-lg relative overflow-hidden group hover:border-teal-500/40 transition-all">
+                  <div className="flex items-center justify-between text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                    <span>Today</span>
+                    <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-teal-400" />
                   </div>
-                  <div className="text-3xl sm:text-4xl font-black text-white font-heading mt-2">{stats.today_count}</div>
-                  <div className="text-[11px] text-teal-400/80 font-semibold mt-1">Scheduled for today</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-heading mt-1 sm:mt-2">{stats.today_count}</div>
+                  <div className="text-[10px] sm:text-[11px] text-teal-400/80 font-semibold mt-0.5">Today's appts</div>
                 </div>
 
-                <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-5 rounded-3xl border border-slate-800/80 shadow-lg relative overflow-hidden group hover:border-amber-500/40 transition-all">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
-                  <div className="flex items-center justify-between text-amber-400 text-xs font-bold uppercase tracking-wider">
-                    <span>Pending Action</span>
-                    <Clock className="w-4 h-4 text-amber-400" />
+                <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-4 sm:p-5 rounded-3xl border border-slate-800/80 shadow-lg relative overflow-hidden group hover:border-amber-500/40 transition-all">
+                  <div className="flex items-center justify-between text-amber-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                    <span>Pending</span>
+                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
                   </div>
-                  <div className="text-3xl sm:text-4xl font-black text-amber-400 font-heading mt-2">{stats.pending_count}</div>
-                  <div className="text-[11px] text-slate-400 font-medium mt-1">Awaiting confirmation</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-amber-400 font-heading mt-1 sm:mt-2">{stats.pending_count}</div>
+                  <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5">Needs action</div>
                 </div>
 
-                <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-5 rounded-3xl border border-slate-800/80 shadow-lg relative overflow-hidden group hover:border-emerald-500/40 transition-all">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl pointer-events-none" />
-                  <div className="flex items-center justify-between text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-4 sm:p-5 rounded-3xl border border-slate-800/80 shadow-lg relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+                  <div className="flex items-center justify-between text-emerald-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
                     <span>Confirmed</span>
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
                   </div>
-                  <div className="text-3xl sm:text-4xl font-black text-emerald-400 font-heading mt-2">{stats.approved_count}</div>
-                  <div className="text-[11px] text-slate-400 font-medium mt-1">Confirmed patient slots</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-emerald-400 font-heading mt-1 sm:mt-2">{stats.approved_count}</div>
+                  <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5">Confirmed slots</div>
                 </div>
 
-                <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-5 rounded-3xl border border-slate-800/80 shadow-lg relative overflow-hidden group hover:border-cyan-500/40 transition-all">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl pointer-events-none" />
-                  <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
-                    <span>Active Surgeons</span>
-                    <Stethoscope className="w-4 h-4 text-cyan-400" />
+                <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-4 sm:p-5 rounded-3xl border border-slate-800/80 shadow-lg relative overflow-hidden group hover:border-cyan-500/40 transition-all">
+                  <div className="flex items-center justify-between text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                    <span>Surgeons</span>
+                    <Stethoscope className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />
                   </div>
-                  <div className="text-3xl sm:text-4xl font-black text-white font-heading mt-2">{stats.total_doctors}</div>
-                  <div className="text-[11px] text-cyan-400/80 font-semibold mt-1">On active clinical duty</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-heading mt-1 sm:mt-2">{stats.total_doctors}</div>
+                  <div className="text-[10px] sm:text-[11px] text-cyan-400/80 font-semibold mt-0.5">Active duty</div>
                 </div>
 
-              </div>
-            )}
-
-            {/* 7-Day Trend Chart */}
-            {stats && stats.trend_7_days && (
-              <div className="bg-gradient-to-br from-slate-900 to-slate-950 p-6 rounded-3xl border border-slate-800/80 shadow-xl space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="p-2 rounded-xl bg-teal-500/20 text-teal-400">
-                      <BarChart3 className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold font-heading text-white">7-Day Appointment Volume Trend</h3>
-                      <p className="text-[11px] text-slate-400">Patient scheduling traffic over the last week</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold font-mono text-teal-400 bg-slate-950 px-3 py-1 rounded-xl border border-slate-800">
-                    Total: {stats.total_appointments} Bookings
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-7 gap-2 pt-4 items-end h-36">
-                  {stats.trend_7_days.map((item, idx) => {
-                    const maxVal = Math.max(...stats.trend_7_days.map(t => t.count), 5);
-                    const pct = Math.round((item.count / maxVal) * 100);
-                    return (
-                      <div key={idx} className="flex flex-col items-center h-full justify-end space-y-2 group">
-                        <div className="text-[10px] font-bold text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {item.count}
-                        </div>
-                        <div
-                          className="w-full max-w-[40px] bg-gradient-to-t from-teal-600 via-teal-500 to-cyan-400 rounded-t-xl transition-all duration-500 hover:brightness-125 shadow-md shadow-teal-500/20"
-                          style={{ height: `${Math.max(pct, 12)}%` }}
-                        />
-                        <div className="text-[10px] font-semibold text-slate-400 truncate">{item.label}</div>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
             )}
 
             {/* Filter & Search Controls */}
-            <div className="bg-slate-900/90 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-slate-800/80 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
+            <div className="bg-slate-900/90 backdrop-blur-md p-3.5 sm:p-5 rounded-3xl border border-slate-800/80 space-y-3 shadow-xl">
               
-              {/* Status Filter Tabs */}
-              <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+              {/* Status Filter Tabs (Touch scrollable) */}
+              <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 scrollbar-none">
                 {[
                   { id: 'all', label: 'All' },
                   { id: 'pending', label: 'Pending', count: stats?.pending_count },
@@ -374,7 +413,7 @@ export default function AdminDashboard({ token, user, onLogout }) {
                   <button
                     key={tab.id}
                     onClick={() => setStatusFilter(tab.id)}
-                    className={`px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex items-center space-x-1.5 ${
+                    className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex items-center space-x-1.5 shrink-0 ${
                       statusFilter === tab.id
                         ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-md shadow-teal-600/30'
                         : 'bg-slate-950/60 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800/60'
@@ -392,14 +431,14 @@ export default function AdminDashboard({ token, user, onLogout }) {
                 ))}
               </div>
 
-              {/* Doctor, Date & Search Controls */}
-              <form onSubmit={handleSearchSubmit} className="flex flex-wrap items-center gap-2">
+              {/* Doctor, Date & Search Form */}
+              <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-center gap-2 pt-1">
                 
                 {/* Doctor Filter Dropdown */}
                 <select
                   value={doctorFilter}
                   onChange={(e) => setDoctorFilter(e.target.value)}
-                  className="px-3.5 py-2 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-teal-500"
+                  className="w-full sm:w-auto px-3 py-2 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-teal-500"
                 >
                   <option value="all">All Specialists</option>
                   {doctorsList.map(doc => (
@@ -412,81 +451,213 @@ export default function AdminDashboard({ token, user, onLogout }) {
                   type="date"
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  className="px-3.5 py-2 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-teal-500"
+                  className="w-full sm:w-auto px-3 py-2 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-teal-500"
                 />
                 
                 {/* Search Bar */}
-                <div className="relative">
+                <div className="relative w-full sm:w-auto flex-1">
                   <Search className="w-3.5 h-3.5 absolute left-3.5 top-3 text-slate-500" />
                   <input
                     type="text"
-                    placeholder="Search name, phone, token..."
+                    placeholder="Search patient, phone, #ID..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 pr-3.5 py-2 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 w-44 sm:w-56"
+                    className="w-full pl-9 pr-3.5 py-2 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-2xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow transition-all flex items-center space-x-1"
-                >
-                  <Filter className="w-3.5 h-3.5" />
-                  <span>Filter</span>
-                </button>
-
-                {(dateFilter || searchQuery || doctorFilter !== 'all') && (
+                <div className="flex items-center space-x-2 w-full sm:w-auto">
                   <button
-                    type="button"
-                    onClick={() => { setDateFilter(''); setSearchQuery(''); setDoctorFilter('all'); }}
-                    className="p-2 rounded-2xl bg-slate-800 text-slate-400 hover:text-white transition-all text-xs font-semibold"
-                    title="Clear Filters"
+                    type="submit"
+                    className="flex-1 sm:flex-initial px-4 py-2 rounded-2xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow transition-all flex items-center justify-center space-x-1"
                   >
-                    Reset
+                    <Filter className="w-3.5 h-3.5" />
+                    <span>Filter</span>
                   </button>
-                )}
+
+                  {(dateFilter || searchQuery || doctorFilter !== 'all') && (
+                    <button
+                      type="button"
+                      onClick={() => { setDateFilter(''); setSearchQuery(''); setDoctorFilter('all'); }}
+                      className="px-3 py-2 rounded-2xl bg-slate-800 text-slate-400 hover:text-white transition-all text-xs font-semibold"
+                      title="Clear Filters"
+                    >
+                      Reset
+                    </button>
+                  )}
+                </div>
 
               </form>
 
             </div>
 
-            {/* Appointments Table Card */}
-            <div className="bg-slate-900/90 backdrop-blur-md rounded-3xl border border-slate-800/80 overflow-hidden shadow-2xl">
-              <div className="w-full">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-950/90 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800 text-[10.5px]">
-                    <tr>
-                      <th className="px-3 py-3 w-16 text-center">ID</th>
-                      <th className="px-3 py-3">Patient Information</th>
-                      <th className="px-3 py-3">Assigned Specialist</th>
-                      <th className="px-3 py-3 w-28">Date &amp; Slot</th>
-                      <th className="px-3 py-3 hidden xl:table-cell">Reason / Symptoms</th>
-                      <th className="px-3 py-3 w-24 text-center">Status</th>
-                      <th className="px-3 py-3 text-right">Quick Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/60">
-                    {loading ? (
-                      <tr>
-                        <td colSpan={7} className="px-4 py-16 text-center text-slate-500">
-                          <div className="flex flex-col items-center justify-center space-y-2">
-                            <RefreshCw className="w-6 h-6 animate-spin text-teal-400" />
-                            <span>Loading live appointments...</span>
+            {/* Loading & Empty States */}
+            {loading ? (
+              <div className="p-12 text-center text-slate-500 bg-slate-900/60 rounded-3xl border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                <RefreshCw className="w-6 h-6 animate-spin text-teal-400" />
+                <span className="text-xs">Loading live appointments...</span>
+              </div>
+            ) : appointments.length === 0 ? (
+              <div className="p-12 text-center text-slate-500 bg-slate-900/60 rounded-3xl border border-slate-800 flex flex-col items-center justify-center space-y-2">
+                <Calendar className="w-8 h-8 text-slate-600" />
+                <span className="font-semibold text-slate-400 text-sm">No matching appointments found.</span>
+                <span className="text-xs text-slate-600">Try adjusting status filters or search query.</span>
+              </div>
+            ) : (
+              <>
+                {/* 📱 MOBILE APPOINTMENT CARDS (Visible on viewports < lg) */}
+                <div className="block lg:hidden space-y-3.5">
+                  {appointments.map((app) => {
+                    const cleanPhone = (app.patient_phone || '').replace(/\D/g, '');
+                    const waDirectUrl = `https://wa.me/91${cleanPhone}`;
+
+                    return (
+                      <div
+                        key={app.id}
+                        className="bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-xl space-y-3 transition-all hover:border-slate-700"
+                      >
+                        {/* Header: Token ID & Status Badge */}
+                        <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                          <div className="flex items-center space-x-2">
+                            <span className="px-2.5 py-0.5 rounded-lg bg-teal-950 border border-teal-500/40 text-teal-300 text-xs font-mono font-bold">
+                              #REH-{app.id}
+                            </span>
+                            {app.is_upcoming_24h && (
+                              <span className="text-[9px] font-bold text-amber-400 bg-amber-950 px-2 py-0.5 rounded-full border border-amber-800">
+                                &lt;24h Alert
+                              </span>
+                            )}
                           </div>
-                        </td>
-                      </tr>
-                    ) : appointments.length === 0 ? (
-                      <tr>
-                        <td colSpan={7} className="px-4 py-16 text-center text-slate-500">
-                          <div className="flex flex-col items-center justify-center space-y-2">
-                            <Calendar className="w-8 h-8 text-slate-600" />
-                            <span className="font-semibold text-slate-400">No matching appointments found.</span>
-                            <span className="text-xs text-slate-600">Try changing status filter or search parameters.</span>
+
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border shadow-sm ${
+                            app.status === 'approved'
+                              ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
+                              : app.status === 'pending'
+                              ? 'bg-amber-950 text-amber-300 border-amber-700 animate-pulse'
+                              : app.status === 'rescheduled'
+                              ? 'bg-sky-950 text-sky-300 border-sky-700'
+                              : 'bg-red-950 text-red-300 border-red-700'
+                          }`}>
+                            {app.status}
+                          </span>
+                        </div>
+
+                        {/* Patient Information & Direct Action Buttons */}
+                        <div className="space-y-1.5">
+                          <div className="font-extrabold text-white text-base font-heading">
+                            {app.patient_name}
                           </div>
-                        </td>
+
+                          {app.reason_for_visit && (
+                            <p className="text-xs text-slate-400 line-clamp-2">
+                              {app.reason_for_visit}
+                            </p>
+                          )}
+
+                          {/* Quick 1-Tap Call & WhatsApp Bar */}
+                          <div className="flex items-center space-x-2 pt-1">
+                            <a
+                              href={`tel:${app.patient_phone}`}
+                              className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-3 rounded-xl bg-slate-950 border border-slate-800 text-teal-300 font-mono text-xs font-bold hover:bg-slate-800 transition-colors"
+                            >
+                              <Phone className="w-3.5 h-3.5 text-teal-400" />
+                              <span>{app.patient_phone}</span>
+                            </a>
+
+                            <a
+                              href={waDirectUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center justify-center space-x-1.5 py-2 px-3 rounded-xl bg-[#25D366]/20 border border-[#25D366]/40 text-[#25D366] text-xs font-bold hover:bg-[#25D366]/30 transition-colors"
+                              title="Chat on WhatsApp"
+                            >
+                              <WhatsAppIcon className="w-3.5 h-3.5 fill-[#25D366]" />
+                              <span>WhatsApp</span>
+                            </a>
+                          </div>
+                        </div>
+
+                        {/* Doctor & Scheduled Time */}
+                        <div className="p-3 rounded-2xl bg-slate-950/80 border border-slate-800/80 text-xs space-y-1">
+                          <div className="flex items-center space-x-1.5 text-slate-300 font-semibold">
+                            <Stethoscope className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                            <span className="truncate">{app.doctor_name} ({app.doctor_specialty})</span>
+                          </div>
+                          <div className="flex items-center space-x-1.5 text-slate-400 font-mono text-[11px]">
+                            <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                            <span className="text-white font-bold">{app.appointment_date}</span>
+                            <span>@</span>
+                            <span className="text-teal-300 font-bold">{app.appointment_time}</span>
+                          </div>
+                        </div>
+
+                        {/* Mobile Management Action Buttons */}
+                        <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center gap-2">
+                          {/* Approve (if pending) */}
+                          {app.status === 'pending' && (
+                            <button
+                              onClick={() => handleApprove(app)}
+                              disabled={approvingId === app.id}
+                              className="flex-1 py-2.5 px-3 rounded-xl bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-emerald-950 transition-all disabled:opacity-50"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>{approvingId === app.id ? 'Approving...' : 'Approve & Send WA'}</span>
+                            </button>
+                          )}
+
+                          {/* Cancel / Reject */}
+                          {app.status !== 'rejected' && (
+                            <button
+                              onClick={() => setCancelTarget(app)}
+                              className="flex-1 py-2.5 px-3 rounded-xl bg-red-950/80 hover:bg-red-600 text-red-300 hover:text-white font-bold text-xs border border-red-800/80 transition-all flex items-center justify-center space-x-1.5"
+                            >
+                              <XCircle className="w-3.5 h-3.5" />
+                              <span>Cancel</span>
+                            </button>
+                          )}
+
+                          {/* Reschedule */}
+                          <button
+                            onClick={() => setRescheduleTarget(app)}
+                            className="p-2.5 rounded-xl bg-slate-950 hover:bg-amber-600 text-slate-300 hover:text-white border border-slate-800 transition-all flex items-center justify-center"
+                            title="Reschedule"
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                          </button>
+
+                          {/* Audit History */}
+                          {app.history_count > 0 && (
+                            <button
+                              onClick={() => setHistoryTarget(app)}
+                              className="p-2.5 rounded-xl bg-slate-950 hover:bg-teal-600 text-teal-400 hover:text-white border border-slate-800 transition-all flex items-center justify-center"
+                              title={`History (${app.history_count})`}
+                            >
+                              <History className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* 🖥️ DESKTOP APPOINTMENTS TABLE (Visible on viewports >= lg) */}
+                <div className="hidden lg:block bg-slate-900/90 backdrop-blur-md rounded-3xl border border-slate-800/80 overflow-hidden shadow-2xl">
+                  <table className="w-full text-left text-xs text-slate-300">
+                    <thead className="bg-slate-950/90 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800 text-[10.5px]">
+                      <tr>
+                        <th className="px-3 py-3.5 w-16 text-center">ID</th>
+                        <th className="px-3 py-3.5">Patient Information</th>
+                        <th className="px-3 py-3.5">Assigned Specialist</th>
+                        <th className="px-3 py-3.5 w-28">Date &amp; Slot</th>
+                        <th className="px-3 py-3.5 hidden xl:table-cell">Reason / Symptoms</th>
+                        <th className="px-3 py-3.5 w-24 text-center">Status</th>
+                        <th className="px-3 py-3.5 text-right">Quick Actions</th>
                       </tr>
-                    ) : (
-                      appointments.map((app) => {
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {appointments.map((app) => {
                         const cleanPhone = (app.patient_phone || '').replace(/\D/g, '');
                         const waDirectUrl = `https://wa.me/91${cleanPhone}`;
 
@@ -515,10 +686,10 @@ export default function AdminDashboard({ token, user, onLogout }) {
                                   href={waDirectUrl}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="p-1 rounded-md bg-emerald-950 text-emerald-400 hover:bg-emerald-800 transition-colors border border-emerald-800/60"
+                                  className="p-1 rounded-md bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366]/40 transition-colors border border-[#25D366]/40"
                                   title="Open WhatsApp Chat directly"
                                 >
-                                  <MessageSquare className="w-2.5 h-2.5" />
+                                  <WhatsAppIcon className="w-2.5 h-2.5 fill-[#25D366]" />
                                 </a>
                               </div>
                             </td>
@@ -542,7 +713,7 @@ export default function AdminDashboard({ token, user, onLogout }) {
                               )}
                             </td>
 
-                            {/* Reason / Symptoms (Hidden on smaller viewports, visible on xl) */}
+                            {/* Reason / Symptoms (Visible on xl) */}
                             <td className="px-3 py-3 max-w-[140px] text-slate-300 text-xs hidden xl:table-cell">
                               <p className="truncate text-[11px]">{app.reason_for_visit || 'General Consultation'}</p>
                             </td>
@@ -571,7 +742,7 @@ export default function AdminDashboard({ token, user, onLogout }) {
                                   <button
                                     onClick={() => handleApprove(app)}
                                     disabled={approvingId === app.id}
-                                    className="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center space-x-1 shadow transition-all disabled:opacity-50"
+                                    className="px-2.5 py-1 rounded-xl bg-[#10B981] hover:bg-[#059669] text-white font-bold text-[11px] flex items-center space-x-1 shadow transition-all disabled:opacity-50"
                                     title="Approve & Send Automated WhatsApp"
                                   >
                                     <CheckCircle2 className="w-3 h-3" />
@@ -579,12 +750,12 @@ export default function AdminDashboard({ token, user, onLogout }) {
                                   </button>
                                 )}
 
-                                {/* Cancel / Reject Button (Available for all active statuses) */}
+                                {/* Cancel / Reject Button */}
                                 {app.status !== 'rejected' && (
                                   <button
                                     onClick={() => setCancelTarget(app)}
                                     className="px-2.5 py-1 rounded-xl bg-red-950/80 hover:bg-red-600 text-red-300 hover:text-white font-bold text-[11px] border border-red-800/80 transition-all flex items-center space-x-1"
-                                    title="Cancel / Reject with custom reason & automated WhatsApp message"
+                                    title="Cancel / Reject"
                                   >
                                     <XCircle className="w-3 h-3" />
                                     <span>Cancel</span>
@@ -616,12 +787,12 @@ export default function AdminDashboard({ token, user, onLogout }) {
 
                           </tr>
                         );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
 
           </div>
         )}

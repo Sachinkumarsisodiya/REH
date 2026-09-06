@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, MessageSquare, Send, CheckCircle2, AlertTriangle, ShieldCheck, HeartPulse } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertTriangle, ShieldCheck, HeartPulse } from 'lucide-react';
 import toast from 'react-hot-toast';
+import WhatsAppIcon from './WhatsAppIcon';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', phone: '', email: '', message: '' });
@@ -88,9 +89,9 @@ export default function Contact() {
                   href={waLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full flex items-center justify-center space-x-2 p-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/25 transition-all transform hover:scale-[1.02]"
+                  className="w-full flex items-center justify-center space-x-2.5 p-3.5 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs shadow-lg shadow-[#25D366]/30 transition-all transform hover:scale-[1.02] active:scale-95"
                 >
-                  <MessageSquare className="w-4 h-4" />
+                  <WhatsAppIcon className="w-4 h-4 fill-white" />
                   <span>Chat on WhatsApp (+91 7733866682)</span>
                 </a>
               </div>

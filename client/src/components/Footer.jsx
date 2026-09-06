@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, ShieldCheck, Heart, ArrowUp, Clock, MessageSquare, ShieldAlert } from 'lucide-react';
+import { Phone, Mail, MapPin, ShieldCheck, Heart, ArrowUp, Clock, ShieldAlert } from 'lucide-react';
+import WhatsAppIcon from './WhatsAppIcon';
 
 export default function Footer({ onBookClick }) {
   const scrollToTop = () => {
@@ -106,8 +107,8 @@ export default function Footer({ onBookClick }) {
                 <span>24/7 Helpline: +91 7733866682</span>
               </a>
 
-              <a href="https://wa.me/917733866682" target="_blank" rel="noreferrer" className="flex items-center space-x-2 text-emerald-400 font-semibold hover:text-emerald-300 transition-colors">
-                <MessageSquare className="w-4 h-4 shrink-0" />
+              <a href="https://wa.me/917733866682" target="_blank" rel="noreferrer" className="flex items-center space-x-2 text-[#25D366] font-semibold hover:text-[#20ba5a] transition-colors">
+                <WhatsAppIcon className="w-4 h-4 shrink-0 fill-current" />
                 <span>WhatsApp: +91 7733866682</span>
               </a>
 

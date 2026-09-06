@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle, Send, Check, MessageSquare, Sparkles } from 'lucide-react';
+import { X, AlertTriangle, Send, Check, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../config/api';
+import WhatsAppIcon from '../components/WhatsAppIcon';
 
 const PRESET_REASONS = [
   "Doctor is on urgent emergency surgery duty during this time slot.",
@@ -158,8 +159,8 @@ Rekha Eye Hospital & Lasik Center`;
 
           {/* Live WhatsApp Message Preview */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center space-x-1.5">
-              <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+            <label className="text-[11px] font-bold uppercase tracking-wider text-[#25D366] flex items-center space-x-1.5">
+              <WhatsAppIcon className="w-3.5 h-3.5 fill-[#25D366]" />
               <span>WhatsApp Message Preview (Dispatched Automatically)</span>
             </label>
             <pre className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-[10px] font-sans text-slate-300 whitespace-pre-wrap leading-relaxed max-h-24 overflow-y-auto">

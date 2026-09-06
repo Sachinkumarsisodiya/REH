@@ -1,9 +1,15 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from flask import Blueprint, request, jsonify
 from models import db, Doctor, Appointment
 from services.notification_service import send_sms_notification, send_whatsapp_auto, send_whatsapp_notification
 
 public_bp = Blueprint('public', __name__)
+
+# Indian Standard Time (UTC+5:30) helper
+IST_OFFSET = timezone(timedelta(hours=5, minutes=30))
+
+def get_current_ist_time():
+    return datetime.now(IST_OFFSET)
 
 def generate_time_slots(start_str, end_str, duration_mins=30):
     slots = []
@@ -66,13 +72,34 @@ def get_available_slots():
 
     booked_times = set(app.appointment_time for app in booked_appointments)
 
-    slot_objects = [
-        {
+    # Current IST datetime for real-time live booking cutoff calculation
+    now_ist = get_current_ist_time()
+    today_str = now_ist.strftime("%Y-%m-%d")
+
+    slot_objects = []
+    for slot in all_slots:
+        is_booked = (slot in booked_times)
+        is_expired = False
+
+        if date_str < today_str:
+            is_expired = True
+        elif date_str == today_str:
+            try:
+                slot_h, slot_m = map(int, slot.split(':'))
+                slot_dt = now_ist.replace(hour=slot_h, minute=slot_m, second=0, microsecond=0)
+                cutoff_dt = slot_dt - timedelta(minutes=15)
+                if now_ist >= cutoff_dt:
+                    is_expired = True
+            except Exception:
+                pass
+
+        is_available = (not is_booked) and (not is_expired)
+        slot_objects.append({
             'time': slot,
-            'is_available': (slot not in booked_times)
-        }
-        for slot in all_slots
-    ]
+            'is_available': is_available,
+            'is_booked': is_booked,
+            'is_expired': is_expired
+        })
 
     return jsonify({
         'success': True,
@@ -101,6 +128,26 @@ def create_appointment():
     doctor = Doctor.query.get(doctor_id)
     if not doctor or not doctor.is_active:
         return jsonify({'success': False, 'error': 'Selected doctor is not available.'}), 400
+
+    # Live Cutoff Validation: 15 minutes prior to slot time
+    now_ist = get_current_ist_time()
+    today_str = now_ist.strftime("%Y-%m-%d")
+
+    if appointment_date < today_str:
+        return jsonify({'success': False, 'error': 'Cannot book an appointment for a past date.'}), 400
+
+    if appointment_date == today_str:
+        try:
+            slot_h, slot_m = map(int, appointment_time.split(':'))
+            slot_dt = now_ist.replace(hour=slot_h, minute=slot_m, second=0, microsecond=0)
+            cutoff_dt = slot_dt - timedelta(minutes=15)
+            if now_ist >= cutoff_dt:
+                return jsonify({
+                    'success': False,
+                    'error': f'The {appointment_time} slot is closed. Appointments must be booked at least 15 minutes in advance.'
+                }), 400
+        except Exception:
+            pass
 
     existing = Appointment.query.filter(
         Appointment.doctor_id == doctor_id,

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Phone, AlertTriangle, X, ShieldAlert, Clock, MapPin, MessageSquare, Zap, Activity } from 'lucide-react';
+import { Phone, AlertTriangle, X, ShieldAlert, Clock, MapPin, Zap, Activity } from 'lucide-react';
+import WhatsAppIcon from './WhatsAppIcon';
 
 export default function EmergencyModal({ isOpen, onClose }) {
   if (!isOpen) return null;
@@ -48,9 +49,9 @@ export default function EmergencyModal({ isOpen, onClose }) {
             href="https://wa.me/917733866682?text=EMERGENCY%20EYE%20CARE%20SOS%3A%20I%20need%20immediate%20ophthalmic%20casualty%20assistance."
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center space-x-2 p-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/30 transition-all"
+            className="w-full flex items-center justify-center space-x-2.5 p-3.5 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-sm shadow-lg shadow-[#25D366]/30 transition-all transform hover:scale-[1.01] active:scale-95"
           >
-            <MessageSquare className="w-4 h-4" />
+            <WhatsAppIcon className="w-5 h-5 fill-white" />
             <span>Send Instant WhatsApp Emergency SOS</span>
           </a>
         </div>
