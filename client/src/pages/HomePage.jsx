@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Hero from '../components/Hero';
+import BrandLogoCarousel from '../components/BrandLogoCarousel';
 import About from '../components/About';
 import Services from '../components/Services';
 import Doctors from '../components/Doctors';
@@ -30,6 +31,7 @@ export default function HomePage() {
   return (
     <div>
       <Hero onBookClick={() => handleBookClick()} />
+      <BrandLogoCarousel />
       <About />
       <Services onBookClick={() => handleBookClick()} />
       <Doctors onSelectDoctorForBooking={(docId) => handleBookClick(docId)} />
