@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import check_password_hash, generate_password_hash
-from models import db, AdminUser, Appointment, AppointmentHistory, Doctor
+from models import db, AdminUser, Appointment, AppointmentHistory, Doctor, Inquiry
 from services.notification_service import send_sms_notification, send_whatsapp_auto, send_whatsapp_notification
 
 admin_bp = Blueprint('admin', __name__)
@@ -257,6 +257,8 @@ def get_dashboard_stats():
     rejected_count = Appointment.query.filter_by(status='rejected').count()
     today_count = Appointment.query.filter_by(appointment_date=today_str).count()
     total_doctors = Doctor.query.filter_by(is_active=True).count()
+    inquiries_new_count = Inquiry.query.filter_by(status='new').count()
+    inquiries_total_count = Inquiry.query.count()
 
     trend = []
     for i in range(6, -1, -1):
@@ -279,8 +281,72 @@ def get_dashboard_stats():
             'rejected_count': rejected_count,
             'today_count': today_count,
             'total_doctors': total_doctors,
+            'inquiries_new_count': inquiries_new_count,
+            'inquiries_total_count': inquiries_total_count,
             'trend_7_days': trend
         }
+    }), 200
+
+@admin_bp.route('/admin/inquiries', methods=['GET'])
+@jwt_required()
+def get_all_inquiries():
+    status = request.args.get('status')
+    search = request.args.get('search')
+
+    query = Inquiry.query
+
+    if status and status != 'all':
+        query = query.filter(Inquiry.status == status)
+    if search:
+        search_pattern = f"%{search}%"
+        query = query.filter(
+            (Inquiry.name.ilike(search_pattern)) |
+            (Inquiry.phone.ilike(search_pattern)) |
+            (Inquiry.email.ilike(search_pattern)) |
+            (Inquiry.message.ilike(search_pattern))
+        )
+
+    inquiries = query.order_by(Inquiry.created_at.desc()).all()
+    return jsonify({
+        'success': True,
+        'count': len(inquiries),
+        'inquiries': [i.to_dict() for i in inquiries]
+    }), 200
+
+@admin_bp.route('/admin/inquiries/<int:inq_id>/status', methods=['PATCH'])
+@jwt_required()
+def update_inquiry_status(inq_id):
+    inquiry = Inquiry.query.get(inq_id)
+    if not inquiry:
+        return jsonify({'success': False, 'error': 'Inquiry not found.'}), 404
+
+    data = request.get_json() or {}
+    new_status = data.get('status', '').strip()
+    if new_status not in ['new', 'contacted', 'resolved']:
+        return jsonify({'success': False, 'error': 'Invalid status. Choose new, contacted, or resolved.'}), 400
+
+    inquiry.status = new_status
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'message': f'Inquiry #{inquiry.id} status updated to {new_status}.',
+        'inquiry': inquiry.to_dict()
+    }), 200
+
+@admin_bp.route('/admin/inquiries/<int:inq_id>', methods=['DELETE'])
+@jwt_required()
+def delete_inquiry(inq_id):
+    inquiry = Inquiry.query.get(inq_id)
+    if not inquiry:
+        return jsonify({'success': False, 'error': 'Inquiry not found.'}), 404
+
+    db.session.delete(inquiry)
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'message': f'Inquiry #{inq_id} deleted successfully.'
     }), 200
 
 @admin_bp.route('/admin/doctors', methods=['GET'])
@@ -434,7 +500,8 @@ def update_doctor(doc_id):
         'doctor': doctor.to_dict()
     }), 200
 
-@admin_bp.route('/admin/doctors/<int:doc_id>', methods=['DELETE', 'PATCH'])
+@admin_bp.route('/admin/doctors/<int:doc_id>/toggle', methods=['PATCH', 'POST', 'DELETE'])
+@admin_bp.route('/admin/doctors/<int:doc_id>', methods=['PATCH'])
 @jwt_required()
 def toggle_doctor_status(doc_id):
     doctor = Doctor.query.get(doc_id)
@@ -450,3 +517,26 @@ def toggle_doctor_status(doc_id):
         'message': f'Doctor {doctor.name} {status_str} successfully.',
         'doctor': doctor.to_dict()
     }), 200
+
+@admin_bp.route('/admin/doctors/<int:doc_id>/permanent', methods=['DELETE'])
+@admin_bp.route('/admin/doctors/<int:doc_id>', methods=['DELETE'])
+@jwt_required()
+def delete_doctor_permanent(doc_id):
+    doctor = Doctor.query.get(doc_id)
+    if not doctor:
+        return jsonify({'success': False, 'error': 'Doctor not found.'}), 404
+
+    doctor_name = doctor.name
+    try:
+        db.session.delete(doctor)
+        db.session.commit()
+        return jsonify({
+            'success': True,
+            'message': f'Doctor {doctor_name} has been permanently deleted from database.'
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': f'Failed to permanently delete doctor: {str(e)}'
+        }), 500

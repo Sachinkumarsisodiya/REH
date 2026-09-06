@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Edit, Power, Check, X, Loader2, Stethoscope, Plus, RotateCcw, CheckCircle2, AlertCircle } from 'lucide-react';
+import { UserPlus, Edit, Power, Check, X, Loader2, Stethoscope, Plus, RotateCcw, CheckCircle2, AlertCircle, Trash2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../config/api';
 
@@ -9,6 +9,8 @@ export default function DoctorManager({ token }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [deleteModalDoctor, setDeleteModalDoctor] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -30,7 +32,6 @@ export default function DoctorManager({ token }) {
     })
       .then(res => {
         if (res.ok) return res.json();
-        // Fallback if admin endpoint fails
         return fetch(`${API_BASE_URL}/api/doctors`).then(r => r.json());
       })
       .then(data => {
@@ -88,8 +89,8 @@ export default function DoctorManager({ token }) {
 
   const toggleStatus = async (docId) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/doctors/${docId}`, {
-        method: 'DELETE',
+      const res = await fetch(`${API_BASE_URL}/api/admin/doctors/${docId}/toggle`, {
+        method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -101,6 +102,30 @@ export default function DoctorManager({ token }) {
       }
     } catch (err) {
       toast.error('Failed to update status.');
+    }
+  };
+
+  const handleConfirmPermanentDelete = async () => {
+    if (!deleteModalDoctor) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/doctors/${deleteModalDoctor.id}/permanent`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(data.message || `Doctor permanently deleted.`);
+        setDeleteModalDoctor(null);
+        fetchDoctors();
+      } else {
+        toast.error(data.error || 'Failed to delete doctor.');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Network error while deleting doctor.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -159,7 +184,7 @@ export default function DoctorManager({ token }) {
             <span>Ophthalmic Specialist Roster</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Manage active/inactive doctors, schedules, and OPD consultation hours
+            Manage active/inactive doctors, OPD consultation hours, or delete specialist profiles
           </p>
         </div>
 
@@ -291,22 +316,90 @@ export default function DoctorManager({ token }) {
                     </span>
                   </div>
 
-                  <button
-                    onClick={() => toggleStatus(doc.id)}
-                    className={`p-2 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold ${
-                      isActive
-                        ? 'bg-slate-800 text-slate-300 hover:bg-red-950/60 hover:text-red-400 hover:border hover:border-red-800'
-                        : 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-600 hover:text-white shadow-md'
-                    }`}
-                    title={isActive ? 'Click to deactivate (Turn OFF)' : 'Click to re-activate doctor (Turn ON)'}
-                  >
-                    <Power className="w-4 h-4" />
-                    {!isActive && <span className="text-[11px] pr-1">Turn ON</span>}
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    {/* Power Toggle Button (Active / Inactive) */}
+                    <button
+                      onClick={() => toggleStatus(doc.id)}
+                      className={`p-2 rounded-xl transition-all flex items-center gap-1.5 text-xs font-bold ${
+                        isActive
+                          ? 'bg-slate-800 text-slate-300 hover:bg-amber-950/60 hover:text-amber-400 hover:border hover:border-amber-700'
+                          : 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-600 hover:text-white shadow-md'
+                      }`}
+                      title={isActive ? 'Click to deactivate (Turn OFF)' : 'Click to re-activate doctor (Turn ON)'}
+                    >
+                      <Power className="w-3.5 h-3.5" />
+                      {!isActive && <span className="text-[11px] pr-0.5">Turn ON</span>}
+                    </button>
+
+                    {/* Permanent Delete Button */}
+                    <button
+                      onClick={() => setDeleteModalDoctor(doc)}
+                      className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-red-400 hover:bg-red-950/60 hover:border hover:border-red-800/80 transition-all"
+                      title="Permanently Delete Doctor from Database"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Permanent Delete Confirmation Modal */}
+      {deleteModalDoctor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-red-500/40 text-white space-y-4 shadow-2xl relative">
+            <div className="flex items-center gap-3 text-red-400">
+              <div className="p-3 bg-red-950/80 border border-red-800/60 rounded-2xl">
+                <AlertTriangle className="w-6 h-6 text-red-400" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">Permanently Delete Doctor?</h3>
+                <p className="text-xs text-red-300/80">This action cannot be undone</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 text-xs space-y-1">
+              <div className="font-bold text-white text-sm">{deleteModalDoctor.name}</div>
+              <div className="text-teal-400">{deleteModalDoctor.specialty}</div>
+              <div className="text-slate-400 text-[11px]">{deleteModalDoctor.qualification}</div>
+            </div>
+
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Are you sure you want to permanently remove <strong>{deleteModalDoctor.name}</strong> from the database? If you only want to temporarily hide them from the website, you can use the Power button instead.
+            </p>
+
+            <div className="pt-2 flex justify-end gap-2">
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => setDeleteModalDoctor(null)}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition-all font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleConfirmPermanentDelete}
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Yes, Delete Permanently</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

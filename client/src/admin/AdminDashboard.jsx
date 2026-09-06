@@ -4,7 +4,7 @@ import {
   Search, Filter, LogOut, ShieldCheck, Stethoscope, ChevronRight,
   History, Activity, Bell, ExternalLink, BarChart3, Plus, Smartphone, Send,
   UserCheck, AlertTriangle, Sparkles, Check, Phone, Mail, FileText, ArrowUpRight,
-  Menu, X
+  Menu, X, MessageSquare
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { API_BASE_URL } from '../config/api';
@@ -12,6 +12,7 @@ import WhatsAppIcon from '../components/WhatsAppIcon';
 import RescheduleModal from './RescheduleModal';
 import HistoryModal from './HistoryModal';
 import DoctorManager from './DoctorManager';
+import InquiryManager from './InquiryManager';
 import CancelModal from './CancelModal';
 
 export default function AdminDashboard({ token, user, onLogout }) {
@@ -185,22 +186,39 @@ export default function AdminDashboard({ token, user, onLogout }) {
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-slate-900/98 border-b border-slate-800 p-4 space-y-3 animate-fadeIn sticky top-14 z-30 shadow-2xl">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               onClick={() => { setActiveTab('appointments'); setMobileMenuOpen(false); }}
-              className={`p-3 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 transition-all ${
+              className={`p-2.5 rounded-2xl font-bold text-xs flex flex-col items-center justify-center space-y-1 transition-all ${
                 activeTab === 'appointments'
                   ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-600/30'
                   : 'bg-slate-950 text-slate-300 border border-slate-800'
               }`}
             >
               <Calendar className="w-4 h-4" />
-              <span>Appointments</span>
+              <span>Appts</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('inquiries'); setMobileMenuOpen(false); }}
+              className={`p-2.5 rounded-2xl font-bold text-xs flex flex-col items-center justify-center space-y-1 transition-all relative ${
+                activeTab === 'inquiries'
+                  ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-600/30'
+                  : 'bg-slate-950 text-slate-300 border border-slate-800'
+              }`}
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Inquiries</span>
+              {stats?.inquiries_new_count > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-400 text-slate-950 text-[9px] font-black flex items-center justify-center">
+                  {stats.inquiries_new_count}
+                </span>
+              )}
             </button>
 
             <button
               onClick={() => { setActiveTab('doctors'); setMobileMenuOpen(false); }}
-              className={`p-3 rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 transition-all ${
+              className={`p-2.5 rounded-2xl font-bold text-xs flex flex-col items-center justify-center space-y-1 transition-all ${
                 activeTab === 'doctors'
                   ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-600/30'
                   : 'bg-slate-950 text-slate-300 border border-slate-800'
@@ -268,6 +286,25 @@ export default function AdminDashboard({ token, user, onLogout }) {
               {stats?.pending_count > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-extrabold">
                   {stats.pending_count}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => setActiveTab('inquiries')}
+              className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl font-bold text-xs transition-all ${
+                activeTab === 'inquiries'
+                  ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-600/30'
+                  : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <MessageSquare className="w-4 h-4" />
+                <span>Patient Inquiries</span>
+              </div>
+              {stats?.inquiries_new_count > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-extrabold">
+                  {stats.inquiries_new_count}
                 </span>
               )}
             </button>
@@ -352,6 +389,8 @@ export default function AdminDashboard({ token, user, onLogout }) {
 
         {activeTab === 'doctors' ? (
           <DoctorManager token={token} />
+        ) : activeTab === 'inquiries' ? (
+          <InquiryManager token={token} onStatsChange={fetchStats} />
         ) : (
           <div className="space-y-6 lg:space-y-8">
             
