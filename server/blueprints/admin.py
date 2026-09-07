@@ -39,10 +39,10 @@ def get_current_user():
 @admin_bp.route('/appointments', methods=['GET'])
 @jwt_required()
 def get_appointments():
-    status = request.args.get('status')
+    status = request.args.get('status', '').strip()
     doctor_id = request.args.get('doctor_id', type=int)
-    date = request.args.get('date')
-    search = request.args.get('search')
+    date = request.args.get('date', '').strip()
+    search = request.args.get('search', '').strip()
 
     query = Appointment.query
 
@@ -54,11 +54,17 @@ def get_appointments():
         query = query.filter(Appointment.appointment_date == date)
     if search:
         search_pattern = f"%{search}%"
-        query = query.filter(
-            (Appointment.patient_name.ilike(search_pattern)) |
-            (Appointment.patient_phone.ilike(search_pattern)) |
-            (Appointment.patient_email.ilike(search_pattern))
-        )
+        # Support searching by name, phone, email, and ID (e.g. #REH-5, REH-5, 5)
+        clean_id_str = search.replace('#REH-', '').replace('REH-', '').replace('#', '').strip()
+        conditions = [
+            Appointment.patient_name.ilike(search_pattern),
+            Appointment.patient_phone.ilike(search_pattern),
+            Appointment.patient_email.ilike(search_pattern)
+        ]
+        if clean_id_str.isdigit():
+            conditions.append(Appointment.id == int(clean_id_str))
+
+        query = query.filter(db.or_(*conditions))
 
     appointments = query.order_by(Appointment.created_at.desc()).all()
     
@@ -76,6 +82,25 @@ def get_appointments():
         'success': True,
         'count': len(result),
         'appointments': result
+    }), 200
+
+@admin_bp.route('/admin/test-sms', methods=['POST'])
+@jwt_required()
+def test_sms_gateway():
+    data = request.get_json() or {}
+    phone = data.get('phone', '').strip()
+    if not phone:
+        return jsonify({'success': False, 'error': 'Phone number is required.'}), 400
+
+    test_message = (
+        f"REKHA EYE HOSPITAL: Test SMS notification dispatched successfully from Hospital Admin Desk at "
+        f"{datetime.now().strftime('%d-%m-%Y %H:%M')}. Hospital Helpline: +91 7733866682."
+    )
+    sent = send_sms_notification(phone, test_message)
+    return jsonify({
+        'success': sent,
+        'message': f'SMS test triggered for {phone}',
+        'sms_sent': sent
     }), 200
 
 @admin_bp.route('/appointments/<int:app_id>/approve', methods=['PATCH'])

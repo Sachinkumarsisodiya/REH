@@ -34,14 +34,58 @@ export default function AdminDashboard({ token, user, onLogout }) {
   const [historyTarget, setHistoryTarget] = useState(null);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [approvingId, setApprovingId] = useState(null);
+  const [showSmsTestModal, setShowSmsTestModal] = useState(false);
+  const [testPhone, setTestPhone] = useState('7733866682');
+  const [testingSms, setTestingSms] = useState(false);
+
+  const handleTestSms = async (e) => {
+    e.preventDefault();
+    if (!testPhone) {
+      toast.error('Please enter a 10-digit mobile number.');
+      return;
+    }
+    setTestingSms(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/test-sms`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ phone: testPhone })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(`Fast2SMS test dispatched to +91 ${testPhone}! Check your phone.`);
+        setShowSmsTestModal(false);
+      } else {
+        toast.error(data.error || 'Fast2SMS test failed. Check FAST2SMS_API_KEY.');
+      }
+    } catch (err) {
+      toast.error('Network error during SMS test.');
+    } finally {
+      setTestingSms(false);
+    }
+  };
+
+  const handleAuthError = () => {
+    toast.error('Session expired. Please log in again.');
+    onLogout();
+  };
 
   const fetchStats = () => {
     fetch(`${API_BASE_URL}/api/admin/dashboard-stats`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 401) {
+          handleAuthError();
+          return null;
+        }
+        return res.json();
+      })
       .then(data => {
-        if (data.success) {
+        if (data && data.success) {
           setStats(data.stats);
         }
       })
@@ -69,10 +113,20 @@ export default function AdminDashboard({ token, user, onLogout }) {
     fetch(url, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 401) {
+          handleAuthError();
+          return null;
+        }
+        return res.json();
+      })
       .then(data => {
-        if (data.success) {
-          setAppointments(data.appointments || []);
+        if (data) {
+          if (data.success) {
+            setAppointments(data.appointments || []);
+          } else {
+            toast.error(data.error || 'Failed to load appointments.');
+          }
         }
       })
       .catch(err => {
@@ -369,6 +423,16 @@ export default function AdminDashboard({ token, user, onLogout }) {
               <WhatsAppIcon className="w-3.5 h-3.5 fill-[#25D366]" />
               <span>WhatsApp Bot: Ready</span>
             </div>
+
+            {/* Test SMS Gateway Button */}
+            <button
+              onClick={() => setShowSmsTestModal(true)}
+              className="px-3 py-1 rounded-full bg-slate-900 border border-teal-500/40 text-teal-300 hover:text-white hover:bg-slate-800 text-xs font-bold flex items-center space-x-1.5 shadow-sm transition-all"
+              title="Test Fast2SMS Gateway"
+            >
+              <Smartphone className="w-3.5 h-3.5 text-teal-400" />
+              <span>Test SMS</span>
+            </button>
 
             {upcoming24hCount > 0 && (
               <div className="px-3 py-1 rounded-full bg-amber-950/60 border border-amber-800 text-amber-300 text-xs font-bold flex items-center space-x-1.5 animate-pulse">
@@ -888,6 +952,79 @@ export default function AdminDashboard({ token, user, onLogout }) {
           token={token}
           onClose={() => setHistoryTarget(null)}
         />
+      )}
+
+      {/* Test SMS Modal */}
+      {showSmsTestModal && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2.5">
+                <div className="p-2 rounded-xl bg-teal-950 border border-teal-500/40 text-teal-400">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-white text-base">Test Fast2SMS Gateway</h3>
+                  <p className="text-[11px] text-slate-400">Send a live test SMS to verify delivery</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSmsTestModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleTestSms} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-300">Recipient Phone (10-Digit Mobile)</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-2.5 text-xs text-slate-500 font-mono font-bold">+91</span>
+                  <input
+                    type="tel"
+                    required
+                    maxLength={10}
+                    placeholder="9876543210"
+                    value={testPhone}
+                    onChange={(e) => setTestPhone(e.target.value.replace(/\D/g, ''))}
+                    className="w-full pl-12 pr-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono text-sm focus:outline-none focus:border-teal-500"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500">
+                  Fast2SMS route &apos;q&apos; will send a live confirmation test to this number.
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowSmsTestModal(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={testingSms}
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white text-xs font-bold shadow-lg shadow-teal-500/20 flex items-center justify-center space-x-2"
+                >
+                  {testingSms ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Sending SMS...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Test SMS</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
     </div>
