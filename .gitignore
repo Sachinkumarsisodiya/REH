@@ -6,6 +6,7 @@ dist-ssr/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # Python
 __pycache__/
@@ -14,9 +15,12 @@ __pycache__/
 *.so
 .Python
 env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -34,15 +38,24 @@ instance/
 .coverage
 htmlcov/
 
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
 # WhatsApp Web Session & Temp Auth
 .wwebjs_auth/
 .wwebjs_cache/
-server/whatsapp-service/.wwebjs_auth/
-server/whatsapp-service/.wwebjs_cache/
+**/server/whatsapp-service/.wwebjs_auth/
+**/server/whatsapp-service/.wwebjs_cache/
 
-# Environment Variables & Sensitive data
-.env.local
-.env.*.local
+# Environment Variables & Sensitive Credentials
+.env
+.env.*
+!.env.example
+*.env
+*.env.*
+!*.env.example
 
 # IDEs & System
 .vscode/
