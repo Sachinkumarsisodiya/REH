@@ -1,36 +1,35 @@
-import os
-import json
-import http.client
-from urllib.parse import quote, urlparse
+import requests
+from urllib.parse import quote
 
-# WhatsApp microservice endpoint URL (from environment or default localhost:3001)
-WA_SERVICE_URL = os.getenv('WHATSAPP_SERVICE_URL', 'http://localhost:3001')
+def get_whatsapp_service_url():
+    url = os.getenv('WHATSAPP_SERVICE_URL', '').strip()
+    if not url:
+        url = 'http://localhost:3001'
+    return url.rstrip('/')
 
 
 def _call_whatsapp_service(phone: str, message: str) -> dict:
     """
-    Internal helper — Dispatches an HTTP POST request to the Node.js
-    whatsapp-web.js microservice running on port 3001.
+    Internal helper — Dispatches an HTTP/HTTPS POST request to the Node.js
+    whatsapp-web.js microservice.
     """
+    base_url = get_whatsapp_service_url()
     try:
-        parsed = urlparse(WA_SERVICE_URL)
-        host = parsed.hostname
-        port = parsed.port or 3001
-
-        payload = json.dumps({'phone': phone, 'message': message})
+        endpoint = f"{base_url}/send-message"
+        payload = {'phone': phone, 'message': message}
         headers = {'Content-Type': 'application/json'}
 
-        conn = http.client.HTTPConnection(host, port, timeout=8)
-        conn.request('POST', '/send-message', body=payload, headers=headers)
-        resp = conn.getresponse()
-        data = json.loads(resp.read().decode())
-        conn.close()
+        resp = requests.post(endpoint, json=payload, headers=headers, timeout=12)
+        try:
+            data = resp.json()
+        except Exception:
+            data = {'success': False, 'error': f"HTTP {resp.status_code}: {resp.text}"}
         return data
 
-    except ConnectionRefusedError:
+    except requests.exceptions.ConnectionError:
         return {
             'success': False,
-            'error': 'WhatsApp microservice unavailable (port 3001). Please ensure Node.js service is running.'
+            'error': f'WhatsApp microservice unavailable at {base_url}. Please ensure Node.js service is running.'
         }
     except Exception as e:
         return {'success': False, 'error': str(e)}
