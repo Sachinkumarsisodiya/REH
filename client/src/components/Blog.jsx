@@ -60,13 +60,18 @@ export default function Blog() {
         {/* Featured Founder Banner */}
         <div className="mb-12 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl flex flex-col md:flex-row items-center gap-6 sm:gap-8">
           <div className="relative shrink-0">
-            <img
-              src="/dr-rekha-sisodiya.jpg"
-              alt="Dr. Rekha Sisodiya - Medical Director"
-              loading="lazy"
-              decoding="async"
-              className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-top border-2 border-white shadow-lg bg-slate-100"
-            />
+            <picture>
+              <source srcSet="/dr-rekha-sisodiya.webp" type="image/webp" />
+              <img
+                src="/dr-rekha-sisodiya.jpg"
+                alt="Dr. Rekha Sisodiya - Medical Director"
+                loading="lazy"
+                decoding="async"
+                width="112"
+                height="112"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-top border-2 border-white shadow-lg bg-slate-100"
+              />
+            </picture>
             <div className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded bg-teal-600 text-white text-[9px] font-black uppercase shadow">
               Founder
             </div>

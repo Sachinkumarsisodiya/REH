@@ -99,15 +99,20 @@ export default function Hero({ onBookClick }) {
             
             {/* Main Visual Image Card with Dr. Rekha Sisodiya */}
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-950 group">
-              <img
-                src="/dr-rekha-sisodiya.jpg"
-                alt="Dr. Rekha Sisodiya - Founder, Medical Director & Chief Ophthalmic Surgeon at Rekha Eye Hospital"
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                className="w-full h-[490px] object-cover object-top group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+              <picture>
+                <source srcSet="/dr-rekha-sisodiya.webp" type="image/webp" />
+                <img
+                  src="/dr-rekha-sisodiya.jpg"
+                  alt="Dr. Rekha Sisodiya - Founder, Medical Director & Chief Ophthalmic Surgeon at Rekha Eye Hospital"
+                  width="500"
+                  height="490"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="w-full h-[490px] object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                />
+              </picture>
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent pointer-events-none" />
 
               {/* Bottom Founder Prestige Badge */}
               <div className="absolute bottom-5 left-5 right-5 text-white bg-slate-950/80 backdrop-blur-md p-4 rounded-2xl border border-slate-800 shadow-xl">

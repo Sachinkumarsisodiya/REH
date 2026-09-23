@@ -237,13 +237,18 @@ export default function AboutPage() {
           
           <div className="lg:col-span-5 space-y-4 text-center lg:text-left flex flex-col items-center lg:items-start">
             <div className="relative inline-block rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900">
-              <img
-                src="/dr-rekha-sisodiya.jpg"
-                alt="Dr. Rekha Sisodiya - Founder & Medical Director"
-                loading="lazy"
-                decoding="async"
-                className="w-72 h-96 sm:w-88 sm:h-[440px] object-cover object-top"
-              />
+              <picture>
+                <source srcSet="/dr-rekha-sisodiya.webp" type="image/webp" />
+                <img
+                  src="/dr-rekha-sisodiya.jpg"
+                  alt="Dr. Rekha Sisodiya - Founder & Medical Director"
+                  loading="lazy"
+                  decoding="async"
+                  width="352"
+                  height="440"
+                  className="w-72 h-96 sm:w-88 sm:h-[440px] object-cover object-top"
+                />
+              </picture>
               <div className="absolute bottom-4 left-4 right-4 bg-slate-950/90 backdrop-blur-md p-4 rounded-2xl text-white border border-slate-700/80 text-left shadow-lg">
                 <div className="font-black text-base text-white font-heading">Dr. Rekha Sisodiya</div>
                 <div className="text-xs font-bold text-teal-400">Hospital Founder, Owner &amp; Chief Surgeon</div>

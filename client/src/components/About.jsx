@@ -18,13 +18,18 @@ export default function About() {
           <div className="lg:col-span-6 grid grid-cols-2 gap-4">
             <div className="space-y-4">
               <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white group relative bg-slate-900">
-                <img
-                  src="/dr-rekha-sisodiya.jpg"
-                  alt="Dr. Rekha Sisodiya - Founder & Chief Surgeon at Rekha Eye Hospital"
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-64 sm:h-80 object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                />
+                <picture>
+                  <source srcSet="/dr-rekha-sisodiya.webp" type="image/webp" />
+                  <img
+                    src="/dr-rekha-sisodiya.jpg"
+                    alt="Dr. Rekha Sisodiya - Founder & Chief Surgeon at Rekha Eye Hospital"
+                    loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="320"
+                    className="w-full h-64 sm:h-80 object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
+                </picture>
                 <div className="absolute bottom-3 left-3 right-3 bg-slate-950/85 backdrop-blur-md p-3 rounded-2xl text-white border border-slate-700/60 shadow-lg">
                   <div className="text-xs font-black text-white font-heading">Dr. Rekha Sisodiya</div>
                   <div className="text-[10px] text-teal-400 font-bold uppercase tracking-wider">Founder &amp; Chief Surgeon (AIIMS)</div>

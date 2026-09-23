@@ -396,13 +396,18 @@ export default function BlogPage() {
           {/* Founder Advisory Header Box */}
           <div className="bg-gradient-to-r from-teal-900 to-slate-900 text-white rounded-3xl p-6 sm:p-10 border border-teal-800 shadow-xl flex flex-col md:flex-row items-center gap-6 sm:gap-10">
             <div className="relative shrink-0">
-              <img
-                src="/dr-rekha-sisodiya.jpg"
-                alt="Dr. Rekha Sisodiya"
-                loading="lazy"
-                decoding="async"
-                className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover object-top border-4 border-teal-500 shadow-2xl"
-              />
+              <picture>
+                <source srcSet="/dr-rekha-sisodiya.webp" type="image/webp" />
+                <img
+                  src="/dr-rekha-sisodiya.jpg"
+                  alt="Dr. Rekha Sisodiya"
+                  loading="lazy"
+                  decoding="async"
+                  width="128"
+                  height="128"
+                  className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl object-cover object-top border-4 border-teal-500 shadow-2xl"
+                />
+              </picture>
               <span className="absolute -bottom-2.5 -right-2 px-3 py-0.5 rounded-full bg-teal-500 text-slate-950 text-[10px] font-black uppercase">
                 Founder
               </span>
